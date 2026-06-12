@@ -106,6 +106,7 @@ export function InvoiceEditor({
   const [deleting, setDeleting] = useState(false);
   const [settled, setSettled] = useState(initialStatus === "SETTLED");
   const [saveError, setSaveError] = useState("");
+  const [editingPayment, setEditingPayment] = useState<{ id: string; method: PaymentMethod; amount: string; note: string } | null>(null);
   const router = useRouter();
 
   // Product picker
@@ -153,6 +154,32 @@ export function InvoiceEditor({
 
   const removeItem = (tempId: string) =>
     setItems((prev) => prev.filter((i) => i.tempId !== tempId));
+
+  const updateQty = (tempId: string, delta: number) =>
+    setItems((prev) => prev.map((i) =>
+      i.tempId === tempId ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i
+    ));
+
+  const deletePayment = async (paymentId: string) => {
+    const res = await fetch(`/api/admin/invoices/${invoiceId}/payments/${paymentId}`, { method: "DELETE" });
+    if (res.ok) setPayments((prev) => prev.filter((p) => p.id !== paymentId));
+  };
+
+  const savePaymentEdit = async () => {
+    if (!editingPayment) return;
+    const amt = parseFloat(editingPayment.amount);
+    if (!amt || amt <= 0) return;
+    const res = await fetch(`/api/admin/invoices/${invoiceId}/payments/${editingPayment.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: amt, method: editingPayment.method, note: editingPayment.note || null }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setPayments((prev) => prev.map((p) => p.id === updated.id ? { ...p, ...updated } : p));
+      setEditingPayment(null);
+    }
+  };
 
   const addManualItem = () => {
     const qty = parseInt(newItem.qty);
@@ -418,7 +445,17 @@ export function InvoiceEditor({
                         )}
                       </div>
                     </div>
-                    <span className="col-span-2 font-sans text-sm text-[#5A3A1E] text-center">{item.quantity}</span>
+                    <div className="col-span-2 flex items-center justify-center gap-1 print:block print:text-center">
+                      {!settled ? (
+                        <>
+                          <button onClick={() => updateQty(item.tempId, -1)} className="print:hidden w-5 h-5 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none">−</button>
+                          <span className="font-sans text-sm text-[#5A3A1E] w-5 text-center">{item.quantity}</span>
+                          <button onClick={() => updateQty(item.tempId, 1)} className="print:hidden w-5 h-5 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none">+</button>
+                        </>
+                      ) : (
+                        <span className="font-sans text-sm text-[#5A3A1E]">{item.quantity}</span>
+                      )}
+                    </div>
                     <span className="col-span-2 font-sans text-sm text-[#9A7A56] text-right">{formatPrice(item.price)}</span>
                     <div className="col-span-3 flex items-center justify-end gap-1">
                       <span className="font-sans text-sm text-[#1A0B04] font-medium">{formatPrice(item.price * item.quantity)}</span>
@@ -631,9 +668,65 @@ export function InvoiceEditor({
               {payments.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-[#EDE1C8] space-y-2">
                   {payments.map((p) => (
-                    <div key={p.id} className="flex justify-between">
-                      <span className="font-sans text-xs text-[#9A7A56]">{methodLabel[p.method]}{p.note ? ` · ${p.note}` : ""}</span>
-                      <span className="font-sans text-xs font-semibold text-[#1A0B04]">{formatPrice(p.amount)}</span>
+                    <div key={p.id}>
+                      {editingPayment?.id === p.id ? (
+                        <div className="space-y-2 bg-[#FAF6EE] rounded-xl p-3">
+                          <div className="flex gap-1">
+                            {(["CASH", "CARD", "UPI"] as PaymentMethod[]).map((m) => (
+                              <button
+                                key={m}
+                                onClick={() => setEditingPayment((e) => e ? { ...e, method: m } : e)}
+                                className={cn(
+                                  "flex-1 py-1 rounded-lg font-sans text-[10px] font-semibold border transition-colors",
+                                  editingPayment.method === m ? "bg-[#1A0B04] text-white border-[#1A0B04]" : "border-[#CFC0A0] text-[#5A3A1E]"
+                                )}
+                              >
+                                {methodLabel[m]}
+                              </button>
+                            ))}
+                          </div>
+                          <input
+                            type="number" min={0} step={0.5}
+                            value={editingPayment.amount}
+                            onChange={(e) => setEditingPayment((ep) => ep ? { ...ep, amount: e.target.value } : ep)}
+                            className="w-full border border-[#CFC0A0] rounded-lg px-2 py-1.5 font-sans text-xs focus:outline-none focus:border-[#B86B1A]"
+                            placeholder="Amount (₹)"
+                          />
+                          <input
+                            value={editingPayment.note}
+                            onChange={(e) => setEditingPayment((ep) => ep ? { ...ep, note: e.target.value } : ep)}
+                            className="w-full border border-[#CFC0A0] rounded-lg px-2 py-1.5 font-sans text-xs focus:outline-none focus:border-[#B86B1A]"
+                            placeholder="Note (optional)"
+                          />
+                          <div className="flex gap-2">
+                            <button onClick={savePaymentEdit} className="flex-1 bg-[#1A0B04] text-white py-1.5 rounded-lg font-sans text-xs font-semibold hover:bg-[#B86B1A]">Save</button>
+                            <button onClick={() => setEditingPayment(null)} className="px-3 py-1.5 border border-[#CFC0A0] rounded-lg font-sans text-xs text-[#9A7A56]">Cancel</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <span className="font-sans text-xs text-[#9A7A56]">{methodLabel[p.method]}{p.note ? ` · ${p.note}` : ""}</span>
+                          </div>
+                          <span className="font-sans text-xs font-semibold text-[#1A0B04] shrink-0">{formatPrice(p.amount)}</span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => setEditingPayment({ id: p.id, method: p.method, amount: String(p.amount / 100), note: p.note ?? "" })}
+                              className="p-1 rounded-lg text-[#9A7A56] hover:text-[#B86B1A] hover:bg-[#EDE1C8] transition-colors"
+                              title="Edit payment"
+                            >
+                              <Edit2 size={11} />
+                            </button>
+                            <button
+                              onClick={() => deletePayment(p.id)}
+                              className="p-1 rounded-lg text-[#9A7A56] hover:text-red-600 hover:bg-red-50 transition-colors"
+                              title="Delete payment"
+                            >
+                              <Trash2 size={11} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                   <div className="flex justify-between pt-2 border-t border-[#EDE1C8]">
