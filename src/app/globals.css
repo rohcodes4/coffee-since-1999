@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --espresso: #120A04;
+  --roast: #2C1810;
+  --caramel: #D4903F;
+  --caramel-light: #E8A85A;
+  --cream: #F2E8D0;
+  --milk: #FBF7EE;
+  --bark: #7A5230;
+  --bark-light: #9A6845;
+  --muted: #5C3D24;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-espresso: var(--espresso);
+  --color-roast: var(--roast);
+  --color-caramel: var(--caramel);
+  --color-caramel-light: var(--caramel-light);
+  --color-cream: var(--cream);
+  --color-milk: var(--milk);
+  --color-bark: var(--bark);
+  --color-bark-light: var(--bark-light);
+  --color-muted: var(--muted);
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-dm-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--espresso);
+  color: var(--cream);
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--caramel);
+  color: var(--espresso);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--espresso);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bark);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--caramel);
 }
