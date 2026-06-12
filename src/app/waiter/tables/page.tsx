@@ -43,7 +43,7 @@ export default function WaiterTablesPage() {
   const router = useRouter();
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchTables = useCallback(async () => {
     const res = await fetch("/api/waiter/tables-status");
@@ -69,7 +69,9 @@ export default function WaiterTablesPage() {
         <div>
           <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.5rem" }}>Tables</h1>
           <p className="font-sans text-xs text-[#9A7A56] mt-0.5">
-            {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · auto-refreshes
+            {lastUpdated
+              ? `${lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · auto-refreshes`
+              : "Loading…"}
           </p>
         </div>
         <button

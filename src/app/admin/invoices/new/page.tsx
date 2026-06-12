@@ -37,7 +37,7 @@ export default async function NewInvoicePage({
       // Fetch uninvoiced order items for this table
       const orders = await db.order.findMany({
         where: { tableId, status: { notIn: ["CANCELLED"] } },
-        include: { items: { where: { invoicedAt: null } } },
+        include: { items: { where: { invoicedAt: null, invoiceItem: { is: null } } } },
         orderBy: { createdAt: "asc" },
       });
       uninvoicedOrderItems = orders.flatMap((o) =>
