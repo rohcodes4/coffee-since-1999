@@ -22,13 +22,21 @@ interface ActiveInvoice {
   status: "DRAFT" | "ISSUED";
 }
 
+interface SettledInvoice {
+  id: string;
+  invoiceNumber: string;
+  settledAt: string | null;
+}
+
 interface TableInfo {
   id: string;
   number: number;
   label: string;
   status: TableStatus;
   pendingItems: PendingItem[];
+  uninvoicedFreeCount: number;
   activeInvoice: ActiveInvoice | null;
+  settledInvoices: SettledInvoice[];
 }
 
 const itemStatusColors: Record<ItemStatus, string> = {
@@ -154,19 +162,20 @@ function TableCard({ table, onOrder }: { table: TableInfo; onOrder: () => void }
           <p className="font-sans text-xs text-[#9A7A56]">#{table.number}</p>
         </div>
         <div className="flex items-center gap-2">
-          {table.activeInvoice ? (
+          {table.activeInvoice && (
             <button
               onClick={() => router.push(`/waiter/invoices/${table.activeInvoice!.id}`)}
               className="flex items-center gap-1 px-3 py-1.5 bg-[#B86B1A] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#9A5912] transition-colors"
             >
               <FileText size={11} /> {table.activeInvoice.invoiceNumber}
             </button>
-          ) : (
+          )}
+          {table.uninvoicedFreeCount > 0 && (
             <button
               onClick={() => router.push(`/waiter/invoices/new?tableId=${table.id}`)}
               className="flex items-center gap-1 px-3 py-1.5 border border-[#CFC0A0] text-[#5A3A1E] rounded-xl font-sans text-xs font-semibold hover:bg-[#EDE1C8] transition-colors"
             >
-              <FileText size={11} /> Request Bill
+              <FileText size={11} /> {table.activeInvoice ? `Bill Remaining (${table.uninvoicedFreeCount})` : "Request Bill"}
             </button>
           )}
           <button
@@ -208,6 +217,29 @@ function TableCard({ table, onOrder }: { table: TableInfo; onOrder: () => void }
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Settled invoices this session */}
+      {table.settledInvoices.length > 0 && (
+        <div className="px-4 py-2.5 border-t border-[#B86B1A]/15 bg-green-50/60">
+          <p className="font-sans text-[10px] uppercase tracking-widest text-[#9A7A56] mb-1.5">Settled today</p>
+          <div className="flex flex-wrap gap-1.5">
+            {table.settledInvoices.map((inv) => (
+              <button
+                key={inv.id}
+                onClick={() => router.push(`/waiter/invoices/${inv.id}`)}
+                className="flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-sans text-[10px] font-semibold hover:bg-green-200 transition-colors"
+              >
+                ✓ {inv.invoiceNumber}
+                {inv.settledAt && (
+                  <span className="text-green-500 font-normal">
+                    · {new Date(inv.settledAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

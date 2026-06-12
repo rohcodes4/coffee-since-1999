@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
-import { Plus, Minus, ShoppingBag, X, ChevronRight, Phone, Loader2, CheckCircle2, Leaf, Coffee, ArrowLeft, Search } from "lucide-react";
+import { Plus, Minus, ShoppingBag, X, ChevronRight, Phone, Loader2, CheckCircle2, Leaf, Coffee, ArrowLeft, Search, Bell, Receipt } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,10 @@ export function OrderClient({
   const [search, setSearch] = useState("");
   const [step, setStep] = useState<Step>("menu");
   const [cartOpen, setCartOpen] = useState(false);
+
+  // Table request state
+  const [callStatus, setCallStatus] = useState<"idle" | "loading" | "sent">("idle");
+  const [billStatus, setBillStatus] = useState<"idle" | "loading" | "sent">("idle");
 
   // OTP / checkout state
   const [phone, setPhone] = useState("");
@@ -68,6 +72,28 @@ export function OrderClient({
     const matchesSearch = !q || p.name.toLowerCase().includes(q) || (p.description ?? "").toLowerCase().includes(q);
     return matchesCategory && matchesSearch;
   });
+
+  async function callWaiter() {
+    if (callStatus !== "idle") return;
+    setCallStatus("loading");
+    await fetch("/api/table-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tableId: table.id, type: "CALL_WAITER" }),
+    });
+    setCallStatus("sent");
+  }
+
+  async function requestBill() {
+    if (billStatus !== "idle") return;
+    setBillStatus("loading");
+    await fetch("/api/table-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tableId: table.id, type: "BILL_REQUEST" }),
+    });
+    setBillStatus("sent");
+  }
 
   async function sendOtp() {
     if (!phone.match(/^\+?[0-9]{10,15}$/)) {
@@ -158,7 +184,36 @@ export function OrderClient({
             <p className="font-sans text-xs text-[#9A7A56]">Please pay <strong className="text-[#1A0B04]">{formatPrice(cartTotal)}</strong> at the counter when your order is ready.</p>
           </div>
 
-          <p className="font-sans text-xs text-[#9A7A56]">We'll prepare your order shortly. Sit back and relax.</p>
+          <p className="font-sans text-xs text-[#9A7A56] mb-6">We'll prepare your order shortly. Sit back and relax.</p>
+
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={callWaiter}
+              disabled={callStatus === "loading"}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 rounded-2xl font-sans text-sm font-semibold transition-colors",
+                callStatus === "sent"
+                  ? "bg-amber-100 text-amber-700 cursor-default"
+                  : "bg-[#1A0B04] text-white hover:bg-[#B86B1A]"
+              )}
+            >
+              {callStatus === "loading" ? <Loader2 size={14} className="animate-spin" /> : <Bell size={14} />}
+              {callStatus === "sent" ? "Waiter notified" : "Call Waiter"}
+            </button>
+            <button
+              onClick={requestBill}
+              disabled={billStatus === "loading"}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 rounded-2xl font-sans text-sm font-semibold transition-colors",
+                billStatus === "sent"
+                  ? "bg-green-100 text-green-700 cursor-default"
+                  : "border-2 border-[#1A0B04] text-[#1A0B04] hover:bg-[#EDE1C8]"
+              )}
+            >
+              {billStatus === "loading" ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
+              {billStatus === "sent" ? "Bill requested" : "Request Bill"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -305,21 +360,49 @@ export function OrderClient({
         )}
       </div>
 
-      {/* Bottom CTA */}
+      {/* Bottom CTA — sits above the action bar */}
       {cartCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#F4ECD9] border-t border-[#CFC0A0]">
+        <div className="fixed bottom-[52px] left-0 right-0 p-3 bg-[#F4ECD9] border-t border-[#CFC0A0]">
           <button
             onClick={() => setCartOpen(true)}
-            className="w-full flex items-center justify-between bg-[#1A0B04] text-white px-6 py-4 rounded-2xl font-sans font-semibold hover:bg-[#B86B1A] transition-colors"
+            className="w-full flex items-center justify-between bg-[#1A0B04] text-white px-6 py-3.5 rounded-2xl font-sans font-semibold hover:bg-[#B86B1A] transition-colors"
           >
             <span>{cartCount} item{cartCount > 1 ? "s" : ""}</span>
-            <span className="flex items-center gap-2">
-              View Cart <ChevronRight size={16} />
-            </span>
+            <span className="flex items-center gap-2">View Cart <ChevronRight size={16} /></span>
             <span>{formatPrice(cartTotal)}</span>
           </button>
         </div>
       )}
+
+      {/* Persistent customer action bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#1A0B04] flex gap-2 px-3 py-2">
+        <button
+          onClick={callWaiter}
+          disabled={callStatus === "loading"}
+          className={cn(
+            "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-sans text-xs font-semibold transition-colors",
+            callStatus === "sent"
+              ? "bg-amber-400 text-[#1A0B04] cursor-default"
+              : "bg-white/10 text-white hover:bg-white/20"
+          )}
+        >
+          {callStatus === "loading" ? <Loader2 size={13} className="animate-spin" /> : <Bell size={13} />}
+          {callStatus === "sent" ? "Waiter on the way" : "Call Waiter"}
+        </button>
+        <button
+          onClick={requestBill}
+          disabled={billStatus === "loading"}
+          className={cn(
+            "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-sans text-xs font-semibold transition-colors",
+            billStatus === "sent"
+              ? "bg-green-400 text-[#1A0B04] cursor-default"
+              : "bg-white/10 text-white hover:bg-white/20"
+          )}
+        >
+          {billStatus === "loading" ? <Loader2 size={13} className="animate-spin" /> : <Receipt size={13} />}
+          {billStatus === "sent" ? "Bill requested" : "Request Bill"}
+        </button>
+      </div>
 
       {/* Cart drawer */}
       {cartOpen && (

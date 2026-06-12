@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { formatPrice } from "@/lib/format";
-import { RefreshCw, Clock, CheckCircle2, ChefHat, Bell, XCircle, Smartphone, UtensilsCrossed, FileText, ExternalLink } from "lucide-react";
+import { RefreshCw, Clock, CheckCircle2, ChefHat, Bell, XCircle, Smartphone, UtensilsCrossed, FileText, ExternalLink, PhoneCall, Receipt } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +80,46 @@ function playNotificationBeep(audioCtxRef: React.MutableRefObject<AudioContext |
   } catch { /* blocked by autoplay policy */ }
 }
 
+function playCallWaiterSound(audioCtxRef: React.MutableRefObject<AudioContext | null>) {
+  try {
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
+    const ctx = audioCtxRef.current;
+    [1000, 1200, 1000, 1200].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      const t = ctx.currentTime + i * 0.18;
+      gain.gain.setValueAtTime(0.45, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      osc.start(t);
+      osc.stop(t + 0.2);
+    });
+  } catch { /* blocked by autoplay policy */ }
+}
+
+function playBillRequestSound(audioCtxRef: React.MutableRefObject<AudioContext | null>) {
+  try {
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
+    const ctx = audioCtxRef.current;
+    [900, 1100, 1300].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      const t = ctx.currentTime + i * 0.22;
+      gain.gain.setValueAtTime(0.35, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    });
+  } catch { /* blocked by autoplay policy */ }
+}
+
 interface InvoiceRequest {
   id: string;
   invoiceNumber: string;
@@ -90,9 +130,19 @@ interface InvoiceRequest {
   items: { price: number; quantity: number }[];
 }
 
+interface TableRequest {
+  id: string;
+  tableId: string;
+  tableName: string;
+  type: "CALL_WAITER" | "BILL_REQUEST";
+  status: "PENDING" | "ATTENDED";
+  createdAt: string;
+}
+
 export default function DashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [invoiceRequests, setInvoiceRequests] = useState<InvoiceRequest[]>([]);
+  const [tableRequests, setTableRequests] = useState<TableRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [newOrderToast, setNewOrderToast] = useState(false);
@@ -100,6 +150,7 @@ export default function DashboardPage() {
   const [dashboardMode, setDashboardMode] = useState<"KANBAN" | "ITEM">("KANBAN");
   const knownOrderIds = useRef<Set<string>>(new Set());
   const knownInvoiceIds = useRef<Set<string>>(new Set());
+  const knownRequestIds = useRef<Set<string>>(new Set());
   const audioCtxRef = useRef<AudioContext | null>(null);
   const audioReady = useRef(false);
 
@@ -121,9 +172,10 @@ export default function DashboardPage() {
   }, []);
 
   const fetchOrders = useCallback(async () => {
-    const [ordersRes, invoicesRes] = await Promise.all([
+    const [ordersRes, invoicesRes, requestsRes] = await Promise.all([
       fetch(`/api/admin/orders?status=${ACTIVE_STATUSES}`),
       fetch("/api/admin/invoices?status=DRAFT"),
+      fetch("/api/admin/table-requests?status=PENDING"),
     ]);
 
     if (ordersRes.ok) {
@@ -151,6 +203,19 @@ export default function DashboardPage() {
       setInvoiceRequests(data);
     }
 
+    if (requestsRes.ok) {
+      const data: TableRequest[] = await requestsRes.json();
+      const newOnes = data.filter((r) => !knownRequestIds.current.has(r.id));
+      if (newOnes.length > 0 && knownRequestIds.current.size > 0) {
+        const hasCall = newOnes.some((r) => r.type === "CALL_WAITER");
+        const hasBill = newOnes.some((r) => r.type === "BILL_REQUEST");
+        if (hasCall) playCallWaiterSound(audioCtxRef);
+        else if (hasBill) playBillRequestSound(audioCtxRef);
+      }
+      data.forEach((r) => knownRequestIds.current.add(r.id));
+      setTableRequests(data);
+    }
+
     setLoading(false);
   }, []);
 
@@ -159,6 +224,11 @@ export default function DashboardPage() {
     const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
   }, [fetchOrders]);
+
+  async function attendRequest(id: string) {
+    await fetch(`/api/admin/table-requests/${id}/attend`, { method: "POST" });
+    setTableRequests((prev) => prev.filter((r) => r.id !== id));
+  }
 
   async function updateOrderStatus(orderId: string, status: OrderStatus) {
     await fetch(`/api/admin/orders/${orderId}`, {
@@ -231,6 +301,60 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Table Requests — persistent until attended */}
+      {tableRequests.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <PhoneCall size={15} className="text-red-500 animate-pulse" />
+            <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-red-500">
+              Customer Requests ({tableRequests.length})
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {tableRequests.map((req) => (
+              <div
+                key={req.id}
+                className={cn(
+                  "rounded-2xl border-2 p-4 flex items-start justify-between gap-3",
+                  req.type === "CALL_WAITER"
+                    ? "bg-red-50 border-red-300"
+                    : "bg-amber-50 border-amber-300"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={cn(
+                    "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
+                    req.type === "CALL_WAITER" ? "bg-red-100" : "bg-amber-100"
+                  )}>
+                    {req.type === "CALL_WAITER"
+                      ? <Bell size={16} className="text-red-600" />
+                      : <Receipt size={16} className="text-amber-600" />}
+                  </div>
+                  <div>
+                    <p className="font-sans text-sm font-semibold text-[#1A0B04]">{req.tableName}</p>
+                    <p className={cn(
+                      "font-sans text-xs font-semibold",
+                      req.type === "CALL_WAITER" ? "text-red-600" : "text-amber-600"
+                    )}>
+                      {req.type === "CALL_WAITER" ? "Calling waiter" : "Requesting bill"}
+                    </p>
+                    <p className="font-sans text-[10px] text-[#9A7A56] mt-0.5">
+                      {new Date(req.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => attendRequest(req.id)}
+                  className="shrink-0 px-3 py-1.5 bg-[#1A0B04] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#B86B1A] transition-colors"
+                >
+                  Attended
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Invoice Requests */}
       {invoiceRequests.length > 0 && (

@@ -20,12 +20,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [pendingOrders, setPendingOrders] = useState(0);
   const [draftInvoices, setDraftInvoices] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
 
   const fetchCounts = useCallback(async () => {
     try {
-      const [ordersRes, invoicesRes] = await Promise.all([
+      const [ordersRes, invoicesRes, requestsRes] = await Promise.all([
         fetch("/api/admin/orders?status=PENDING"),
         fetch("/api/admin/invoices?status=DRAFT"),
+        fetch("/api/admin/table-requests?status=PENDING"),
       ]);
       if (ordersRes.ok) {
         const data = await ordersRes.json();
@@ -34,6 +36,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (invoicesRes.ok) {
         const data = await invoicesRes.json();
         setDraftInvoices(Array.isArray(data) ? data.length : 0);
+      }
+      if (requestsRes.ok) {
+        const data = await requestsRes.json();
+        setPendingRequests(Array.isArray(data) ? data.length : 0);
       }
     } catch { /* ignore */ }
   }, []);
@@ -46,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname, fetchCounts]);
 
   const nav = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, badge: pendingOrders + draftInvoices },
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, badge: pendingOrders + draftInvoices + pendingRequests },
     { href: "/admin/menu",      label: "Menu",       icon: UtensilsCrossed, badge: 0 },
     { href: "/admin/tables",    label: "Tables",     icon: QrCode,          badge: 0 },
     { href: "/admin/orders",    label: "Orders",     icon: ClipboardList,   badge: pendingOrders },

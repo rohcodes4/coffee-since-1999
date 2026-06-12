@@ -9,14 +9,15 @@ datasource db {
 }
 
 model Table {
-  id               String        @id @default(cuid())
-  number           Int           @unique
+  id               String         @id @default(cuid())
+  number           Int            @unique
   label            String
-  status           TableStatus   @default(AVAILABLE)
+  status           TableStatus    @default(AVAILABLE)
   sessionStartedAt DateTime?
   orders           Order[]
   payments         TablePayment[]
   invoices         Invoice[]
+  tableRequests    TableRequest[]
 }
 
 model Category {
@@ -205,4 +206,26 @@ enum PaymentMethod {
 enum TableStatus {
   AVAILABLE
   OCCUPIED
+}
+
+enum TableRequestType {
+  CALL_WAITER
+  BILL_REQUEST
+}
+
+enum TableRequestStatus {
+  PENDING
+  ATTENDED
+}
+
+model TableRequest {
+  id         String             @id @default(cuid())
+  tableId    String
+  table      Table              @relation(fields: [tableId], references: [id])
+  tableName  String
+  type       TableRequestType
+  status     TableRequestStatus @default(PENDING)
+  createdAt  DateTime           @default(now())
+  attendedAt DateTime?
+  attendedBy String?
 }
