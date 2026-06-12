@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { formatPrice } from "@/lib/format";
-import { RefreshCw, Clock, CheckCircle2, ChefHat, Bell, XCircle, Smartphone, UtensilsCrossed } from "lucide-react";
+import { RefreshCw, Clock, CheckCircle2, ChefHat, Bell, XCircle, Smartphone, UtensilsCrossed, FileText, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "DONE" | "CANCELLED";
@@ -79,13 +80,26 @@ function playNotificationBeep(audioCtxRef: React.MutableRefObject<AudioContext |
   } catch { /* blocked by autoplay policy */ }
 }
 
+interface InvoiceRequest {
+  id: string;
+  invoiceNumber: string;
+  tableName: string;
+  waiterName: string | null;
+  status: string;
+  createdAt: string;
+  items: { price: number; quantity: number }[];
+}
+
 export default function DashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [invoiceRequests, setInvoiceRequests] = useState<InvoiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [newOrderToast, setNewOrderToast] = useState(false);
+  const [newInvoiceToast, setNewInvoiceToast] = useState(false);
   const [dashboardMode, setDashboardMode] = useState<"KANBAN" | "ITEM">("KANBAN");
   const knownOrderIds = useRef<Set<string>>(new Set());
+  const knownInvoiceIds = useRef<Set<string>>(new Set());
   const audioCtxRef = useRef<AudioContext | null>(null);
   const audioReady = useRef(false);
 
@@ -107,9 +121,13 @@ export default function DashboardPage() {
   }, []);
 
   const fetchOrders = useCallback(async () => {
-    const res = await fetch(`/api/admin/orders?status=${ACTIVE_STATUSES}`);
-    if (res.ok) {
-      const data: Order[] = await res.json();
+    const [ordersRes, invoicesRes] = await Promise.all([
+      fetch(`/api/admin/orders?status=${ACTIVE_STATUSES}`),
+      fetch("/api/admin/invoices?status=DRAFT"),
+    ]);
+
+    if (ordersRes.ok) {
+      const data: Order[] = await ordersRes.json();
       const newPending = data.filter((o) => o.status === "PENDING" && !knownOrderIds.current.has(o.id));
       if (newPending.length > 0 && knownOrderIds.current.size > 0) {
         playNotificationBeep(audioCtxRef);
@@ -120,6 +138,19 @@ export default function DashboardPage() {
       setOrders(data);
       setLastUpdated(new Date());
     }
+
+    if (invoicesRes.ok) {
+      const data: InvoiceRequest[] = await invoicesRes.json();
+      const newRequests = data.filter((inv) => !knownInvoiceIds.current.has(inv.id));
+      if (newRequests.length > 0 && knownInvoiceIds.current.size > 0) {
+        playNotificationBeep(audioCtxRef);
+        setNewInvoiceToast(true);
+        setTimeout(() => setNewInvoiceToast(false), 4000);
+      }
+      data.forEach((inv) => knownInvoiceIds.current.add(inv.id));
+      setInvoiceRequests(data);
+    }
+
     setLoading(false);
   }, []);
 
@@ -163,8 +194,13 @@ export default function DashboardPage() {
       }
     }}>
       {newOrderToast && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-2 bg-[#1A0B04] text-white px-4 py-3 rounded-2xl shadow-lg font-sans text-sm animate-in slide-in-from-top-2">
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-2 bg-[#1A0B04] text-white px-4 py-3 rounded-2xl shadow-lg font-sans text-sm">
           <Bell size={16} className="text-[#B86B1A]" /> New order received!
+        </div>
+      )}
+      {newInvoiceToast && (
+        <div className="fixed top-20 right-6 z-50 flex items-center gap-2 bg-[#B86B1A] text-white px-4 py-3 rounded-2xl shadow-lg font-sans text-sm">
+          <FileText size={16} /> Invoice requested!
         </div>
       )}
 
@@ -195,6 +231,46 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Invoice Requests */}
+      {invoiceRequests.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <FileText size={15} className="text-[#B86B1A]" />
+            <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-[#B86B1A]">
+              Invoice Requests ({invoiceRequests.length})
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {invoiceRequests.map((inv) => {
+              const total = inv.items.reduce((s, i) => s + i.price * i.quantity, 0);
+              return (
+                <div key={inv.id} className="bg-white border-2 border-[#B86B1A]/30 rounded-2xl p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-mono text-xs font-semibold text-[#1A0B04]">{inv.invoiceNumber}</p>
+                      <p className="font-sans text-sm font-semibold text-[#1A0B04] mt-0.5">{inv.tableName || "Manual"}</p>
+                      {inv.waiterName && (
+                        <p className="font-sans text-xs text-[#9A7A56]">Requested by {inv.waiterName}</p>
+                      )}
+                    </div>
+                    <p className="font-display italic text-[#B86B1A]" style={{ fontSize: "1rem" }}>{formatPrice(total)}</p>
+                  </div>
+                  <p className="font-sans text-[10px] text-[#9A7A56] mb-3">
+                    {new Date(inv.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                  <Link
+                    href={`/admin/invoices/${inv.id}`}
+                    className="flex items-center justify-center gap-1.5 w-full py-2 bg-[#B86B1A] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#9A5912] transition-colors"
+                  >
+                    <ExternalLink size={11} /> Open &amp; Print
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <p className="font-sans text-sm text-[#9A7A56]">Loading orders…</p>
