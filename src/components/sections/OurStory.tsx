@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 
 const milestones = [
-  { year: "1999", text: "Founded in Thousand Lights — Chennai gets its OG coffee shop." },
-  { year: "2000s", text: "Becomes the neighbourhood's favourite post-college hangout. Word spreads." },
-  { year: "2010s", text: "A loyal following of regulars. Same recipes. Same warmth. Expanded menu." },
-  { year: "2021", text: "Reimagined by cinematographer Nirav Shah — same soul, elevated experience." },
-  { year: "Today", text: "4.4★ · 1,500+ reviews · #114 of 5,751 coffeehouses in Chennai." },
+  { year: "1999", text: "Three brothers, a Krups home machine, and no experience. Coffee? opens on Greenways Road with a short vegetarian menu. Friends bring friends. The Hindu calls it the spark that ignited the city's café culture." },
+  { year: "2008", text: "The doors close. Nirav moves to Mumbai. His films go to Dhoom, Billa, Tenet. Chennai moves on. But the regulars never quite forget." },
+  { year: "2021", text: "On a whim, the brothers reunite. New address in Thousand Lights. A Sanremo Opera 2.0 replaces the Krups. Same soul, serious coffee." },
+  { year: "The Craft", text: "V60. Chemex. Aeropress. Kalita. Specialty brewing done properly, because the cup in front of you deserves it." },
+  { year: "Today", text: "A third place. Between home and work. Open mic nights, pour-overs at 3pm, and a football turf next door." },
 ];
 
 export function OurStory() {
@@ -46,19 +46,21 @@ export function OurStory() {
               className="font-display font-light text-paper leading-[0.9] mb-8"
               style={{ fontSize: "clamp(3.5rem, 9vw, 7rem)", fontVariationSettings: '"opsz" 120' }}
             >
-              A quarter <br />
-              century of <br />
+              Closed for <br />
+              13 years. <br />
               <em
                 className="italic text-caramel"
-                style={{ fontVariationSettings: '"opsz" 120, "SOFT" 60' }}
+                style={{ fontVariationSettings: '"opsz" 120' }}
               >
-                great coffee.
+                Worth the wait.
               </em>
             </h2>
             <p className="font-sans text-sm text-paper/50 leading-relaxed max-w-xs">
-              What started as a simple coffee shop in 1999 became Chennai&apos;s most beloved cafe.
-              Not because we chased trends — but because we never stopped caring about the cup
-              in front of you.
+              Three brothers started this with a Krups machine and the courage that comes from
+              having no experience. The Hindu said it ignited the city&apos;s café culture. Then
+              in 2008, the doors closed. Nirav&apos;s film career took him to Mumbai, to Bollywood
+              blockbusters, to Christopher Nolan. Bhavesh stayed in Chennai. The city moved on,
+              but the regulars never forgot.
             </p>
           </motion.div>
 

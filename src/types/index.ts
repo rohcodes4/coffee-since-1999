@@ -51,7 +51,6 @@ export interface CafeInfo {
   mapsUrl?: string;
   rating?: string;
   reviewCount?: string;
-  priceForTwo?: string;
   menu: MenuItem[];
   gallery: GalleryImage[];
 }

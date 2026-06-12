@@ -56,3 +56,27 @@ All copy and structured data lives in `src/content/cafe.ts` as typed TypeScript 
 - No default exports except page/layout files (Next.js requirement)
 - Tailwind v4: use `@theme inline` in globals.css for custom tokens; no `tailwind.config.ts`
 - `clsx` + `tailwind-merge` via `cn()` for class merging
+- All prices stored in paise (integers); use `formatPrice()` from `@/lib/format` for display
+
+## Documentation Rule
+
+After completing any feature or meaningful change, update the relevant docs in `docs/`:
+
+| File | Update when |
+|---|---|
+| `docs/tracker.md` | Any feature completed or added to backlog |
+| `docs/schema.md` | Any Prisma schema change |
+| `docs/prd.md` | New feature added or requirements change |
+| `docs/architecture.md` | New files, routes, or architectural patterns added |
+| `docs/user-flows.md` | New user journey or flow change |
+| `docs/help.md` | Any change to admin/waiter portal features, flows, or settings |
+
+These docs are the source of truth for anyone onboarding or resuming work on this project.
+
+**Important:** `docs/help.md` is the client-facing handover document. Update it whenever:
+- A new feature is added to the admin or waiter portal
+- A flow changes (invoice, ordering, table management)
+- Settings options are added or renamed
+- Roles or permissions change
+
+The `/help` page at `src/app/help/page.tsx` mirrors `docs/help.md` — keep both in sync.

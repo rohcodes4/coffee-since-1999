@@ -21,7 +21,7 @@ export const cafe: CafeInfo = {
   name: "Coffee? Since 1999",
   tagline: "Chennai's OG Hangout",
   description:
-    "One of Chennai's oldest coffee shops. Since 1999, a cozy escape in Thousand Lights where the entire place smells like coffee and every visit feels like coming home.",
+    "Three brothers. A home coffee machine. 1999. They closed the doors in 2008, then came back in 2021 with a Sanremo Opera and a cinematographer's eye. Chennai's original café, back and better.",
   phone: "+91 80564 02888",
   email: "",
   address: {
@@ -47,7 +47,6 @@ export const cafe: CafeInfo = {
   mapsUrl: "https://maps.app.goo.gl/9cAn6RbpJD6o3kSAA",
   rating: "4.4",
   reviewCount: "1500+",
-  priceForTwo: "₹1,400",
 
   gallery: [
     { src: `${U}/photo-1501339847302-ac426a4a7cbb?w=700&h=950&fit=crop&q=85`, alt: "Warm cafe interior",             aspect: "portrait"   },
@@ -89,7 +88,7 @@ export const cafe: CafeInfo = {
     },
     {
       name: "Turkish Latte",
-      description: "Espresso with cardamom and warm spices — an Eastern twist on a classic.",
+      description: "Espresso with cardamom and warm spices, an Eastern twist on a classic.",
       price: "₹295", category: "espresso", veg: true,
       image: `${U}/photo-1514432324607-a09d9b4aefdd?w=600&h=700&fit=crop&q=80`,
     },
@@ -173,7 +172,7 @@ export const cafe: CafeInfo = {
     },
     {
       name: "Berry Thickshake",
-      description: "Blueberry, cranberry, raspberry and strawberry — a riot of berries.",
+      description: "Blueberry, cranberry, raspberry and strawberry. A riot of berries.",
       price: "₹270", category: "thickshakes", veg: true,
       image: `${U}/photo-1623065422902-30a2d299bbe4?w=600&h=700&fit=crop&q=80`,
     },
@@ -361,7 +360,7 @@ export const cafe: CafeInfo = {
     /* ── BOWLS ────────────────────────────────────────────── */
     {
       name: "Chilli Paneer Fried Rice",
-      description: "Indo-Chinese classic — wok-tossed jasmine rice with crispy chilli paneer.",
+      description: "Indo-Chinese classic: wok-tossed jasmine rice with crispy chilli paneer.",
       price: "₹460", category: "bowls", veg: true,
       image: `${U}/photo-1512058564366-18510be2db19?w=600&h=500&fit=crop&q=80`,
     },

@@ -18,7 +18,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Coffee? Since 1999 — Chennai's OG Hangout",
+    default: "Coffee? Since 1999 · Chennai's OG Hangout",
     template: "%s | Coffee? Since 1999",
   },
   description:
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Coffee? Since 1999",
-    title: "Coffee? Since 1999 — Chennai's OG Hangout",
+    title: "Coffee? Since 1999 · Chennai's OG Hangout",
     description: "One of Chennai's oldest coffee shops. Since 1999, Thousand Lights, Chennai.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Coffee? Since 1999 — Chennai's OG Hangout",
+    title: "Coffee? Since 1999 · Chennai's OG Hangout",
     description: "One of Chennai's oldest coffee shops. Since 1999.",
   },
 };

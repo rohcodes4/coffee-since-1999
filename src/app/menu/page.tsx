@@ -6,11 +6,12 @@ import {
   EggFried, Slice, Sandwich, UtensilsCrossed,
   Utensils, Salad, CakeSlice, Star,
 } from "lucide-react";
-import { cafe, menuCategories } from "@/content/cafe";
 import { Navbar } from "@/components/sections/Navbar";
 import { Footer } from "@/components/sections/Footer";
 import { DietaryBadge, DietaryLegend } from "@/components/ui/DietaryBadge";
-import type { MenuItem } from "@/types";
+import { formatPrice } from "@/lib/format";
+import { db } from "@/lib/db";
+import { cafe } from "@/content/cafe";
 
 const categoryIcons: Record<string, LucideIcon> = {
   "espresso":    Coffee,
@@ -29,17 +30,24 @@ const categoryIcons: Record<string, LucideIcon> = {
 
 export const metadata: Metadata = {
   title: "Menu",
-  description: "Full menu at Coffee? Since 1999 — churros, specialty lattes, grilled sandwiches, pasta, mains, desserts and more. Thousand Lights, Chennai.",
+  description: "Full menu at Coffee? Since 1999: churros, specialty lattes, grilled sandwiches, pasta, mains, desserts and more. Thousand Lights, Chennai.",
 };
 
-function MenuItemRow({ item }: { item: MenuItem }) {
+interface DbProduct {
+  id: string; name: string; description: string | null;
+  price: number; imageUrl: string | null;
+  signature: boolean; tag: string | null;
+  veg: boolean; vegan: boolean;
+  categories: { category: { id: string; slug: string; name: string } }[];
+}
+
+function MenuItemRow({ item }: { item: DbProduct }) {
   return (
     <div className="group flex items-start gap-4 py-4 border-b border-line last:border-0">
-      {/* Image */}
-      {item.image ? (
+      {item.imageUrl ? (
         <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden shrink-0 bg-paper-2">
           <Image
-            src={item.image}
+            src={item.imageUrl}
             alt={item.name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -51,8 +59,6 @@ function MenuItemRow({ item }: { item: MenuItem }) {
           <Coffee size={20} className="text-ink-3" />
         </div>
       )}
-
-      {/* Details */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap min-w-0">
@@ -68,7 +74,7 @@ function MenuItemRow({ item }: { item: MenuItem }) {
             className="font-display italic text-caramel shrink-0"
             style={{ fontSize: "1rem", fontVariationSettings: '"opsz" 20' }}
           >
-            {item.price}
+            {formatPrice(item.price)}
           </span>
         </div>
         {item.description && (
@@ -81,13 +87,13 @@ function MenuItemRow({ item }: { item: MenuItem }) {
   );
 }
 
-function FeaturedItemCard({ item }: { item: MenuItem }) {
+function FeaturedItemCard({ item }: { item: DbProduct }) {
   return (
     <div className="group relative rounded-2xl overflow-hidden bg-surface border border-line hover:border-caramel/40 transition-colors">
-      {item.image && (
+      {item.imageUrl && (
         <div className="relative h-48 overflow-hidden">
           <Image
-            src={item.image}
+            src={item.imageUrl}
             alt={item.name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -116,7 +122,7 @@ function FeaturedItemCard({ item }: { item: MenuItem }) {
             className="font-display italic text-caramel shrink-0"
             style={{ fontSize: "1rem", fontVariationSettings: '"opsz" 20' }}
           >
-            {item.price}
+            {formatPrice(item.price)}
           </span>
         </div>
         <p className="font-sans text-xs text-ink-3 leading-relaxed line-clamp-2">{item.description}</p>
@@ -125,8 +131,17 @@ function FeaturedItemCard({ item }: { item: MenuItem }) {
   );
 }
 
-export default function MenuPage() {
-  const signatureIds = cafe.menu.filter((i) => i.signature).map((i) => i.name);
+export default async function MenuPage() {
+  const [categories, products] = await Promise.all([
+    db.category.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
+    db.product.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: "asc" },
+      include: { categories: { include: { category: { select: { id: true, slug: true, name: true } } } } },
+    }),
+  ]);
+
+  const signatureItems = products.filter((p) => p.signature);
 
   return (
     <>
@@ -134,7 +149,6 @@ export default function MenuPage() {
       <main className="min-h-screen bg-paper pt-28 pb-24 px-6 lg:px-10">
         <div className="max-w-5xl mx-auto">
 
-          {/* Page header */}
           <div className="mb-16">
             <span className="font-sans text-[10px] font-semibold tracking-[0.35em] uppercase text-caramel block mb-3">
               Coffee? Since 1999
@@ -148,43 +162,44 @@ export default function MenuPage() {
             <div className="flex items-center gap-4 mb-5">
               <div className="h-px flex-1 max-w-24 bg-line" />
               <p className="font-sans text-xs text-ink-3">
-                {cafe.priceForTwo} for two · Thousand Lights, Chennai · Updated 2025
+                Thousand Lights, Chennai · Updated 2025
               </p>
             </div>
-            {/* Dietary legend */}
             <div className="inline-flex px-4 py-2.5 rounded-xl bg-surface border border-line">
               <DietaryLegend />
             </div>
           </div>
 
-          {/* Signature section — card grid */}
-          <div className="mb-20">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-line">
-              <Star size={18} className="text-caramel" />
-              <h2
-                className="font-display font-medium text-ink"
-                style={{ fontSize: "1.6rem", fontVariationSettings: '"opsz" 30' }}
-              >
-                Signatures
-              </h2>
-              <span className="font-sans text-xs text-ink-3 ml-auto">{signatureIds.length} items</span>
+          {signatureItems.length > 0 && (
+            <div className="mb-20">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-line">
+                <Star size={18} className="text-caramel" />
+                <h2
+                  className="font-display font-medium text-ink"
+                  style={{ fontSize: "1.6rem", fontVariationSettings: '"opsz" 30' }}
+                >
+                  Signatures
+                </h2>
+                <span className="font-sans text-xs text-ink-3 ml-auto">{signatureItems.length} items</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {signatureItems.map((item) => (
+                  <FeaturedItemCard key={item.id} item={item} />
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {cafe.menu.filter((i) => i.signature).map((item) => (
-                <FeaturedItemCard key={item.name} item={item} />
-              ))}
-            </div>
-          </div>
+          )}
 
-          {/* All other categories */}
-          {menuCategories.map((cat) => {
-            const items = cafe.menu.filter((i) => i.category === cat.id && !i.signature);
+          {categories.map((cat) => {
+            const items = products.filter(
+              (p) => !p.signature && p.categories.some((c) => c.category.id === cat.id)
+            );
             if (items.length === 0) return null;
 
             return (
               <section key={cat.id} className="mb-16">
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-line">
-                  {(() => { const Icon = categoryIcons[cat.id]; return Icon ? <Icon size={18} className="text-caramel shrink-0" /> : null; })()}
+                  {(() => { const Icon = categoryIcons[cat.slug]; return Icon ? <Icon size={18} className="text-caramel shrink-0" /> : null; })()}
                   <h2
                     className="font-display font-medium text-ink"
                     style={{ fontSize: "1.6rem", fontVariationSettings: '"opsz" 30' }}
@@ -195,17 +210,19 @@ export default function MenuPage() {
                 </div>
                 <div className="flex flex-col">
                   {items.map((item) => (
-                    <MenuItemRow key={item.name} item={item} />
+                    <MenuItemRow key={item.id} item={item} />
                   ))}
                 </div>
               </section>
             );
           })}
 
-          {/* Footer note */}
           <div className="mt-16 pt-8 border-t border-line text-center">
+            <p className="font-sans text-xs text-ink-3 mb-2">
+              Prices and availability may vary.
+            </p>
             <p className="font-sans text-xs text-ink-3 mb-6">
-              Prices and availability may vary. For the most up-to-date menu, visit us or order online.
+              Scan the QR code at your table to order in-person, or order for delivery:
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <a

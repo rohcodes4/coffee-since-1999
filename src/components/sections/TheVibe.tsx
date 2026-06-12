@@ -60,7 +60,7 @@ export function TheVibe() {
           <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-caramel/20 bg-caramel/5 mb-10">
             <CircleDot size={16} className="text-caramel shrink-0" />
             <p className="font-sans text-sm text-cream/60">
-              <span className="text-cream font-medium">One-of-a-kind view</span> — glass walls
+              <span className="text-cream font-medium">One-of-a-kind view:</span> glass walls
               overlook a live football turf
             </p>
           </div>

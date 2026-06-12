@@ -2,13 +2,20 @@ import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { LegacyMarquee } from "@/components/sections/LegacyMarquee";
 import { SignatureItems } from "@/components/sections/SignatureItems";
-import { AmbientGallery } from "@/components/sections/AmbientGallery";
+import { TheCraft } from "@/components/sections/TheCraft";
 import { OurStory } from "@/components/sections/OurStory";
+import { TheFounders } from "@/components/sections/TheFounders";
+import { AmbientGallery } from "@/components/sections/AmbientGallery";
 import { VisitUs } from "@/components/sections/VisitUs";
 import { Footer } from "@/components/sections/Footer";
 import { cafe } from "@/content/cafe";
+import { db } from "@/lib/db";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const signatureItems = await db.product.findMany({
+    where: { active: true, signature: true },
+    orderBy: { sortOrder: "asc" },
+  });
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CafeOrCoffeeShop",
@@ -38,9 +45,11 @@ export default function HomePage() {
       <main>
         <Hero />
         <LegacyMarquee />
-        <SignatureItems />
-        <AmbientGallery />
+        <SignatureItems items={signatureItems} />
+        <TheCraft />
         <OurStory />
+        <TheFounders />
+        <AmbientGallery />
         <VisitUs />
       </main>
       <Footer />

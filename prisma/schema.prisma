@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Table {
+  id               String        @id @default(cuid())
+  number           Int           @unique
+  label            String
+  status           TableStatus   @default(AVAILABLE)
+  sessionStartedAt DateTime?
+  orders           Order[]
+  payments         TablePayment[]
+  invoices         Invoice[]
+}
+
+model Category {
+  id        String            @id @default(cuid())
+  name      String
+  slug      String            @unique
+  sortOrder Int               @default(0)
+  active    Boolean           @default(true)
+  products  ProductCategory[]
+}
+
+model Product {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  imageUrl    String?
+  active      Boolean           @default(true)
+  signature   Boolean           @default(false)
+  tag         String?
+  veg         Boolean           @default(false)
+  vegan       Boolean           @default(false)
+  sortOrder   Int               @default(0)
+  categories  ProductCategory[]
+  orderItems  OrderItem[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  tableId   String
+  table     Table       @relation(fields: [tableId], references: [id])
+  status    OrderStatus @default(PENDING)
+  source    OrderSource @default(CUSTOMER)
+  phone     String      @default("")
+  notes     String?
+  total     Int
+  waiterId  String?
+  waiter    Waiter?     @relation(fields: [waiterId], references: [id])
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id          String          @id @default(cuid())
+  orderId     String
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product         @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Int
+  name        String
+  status      OrderItemStatus @default(PENDING)
+  invoicedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  invoiceItem InvoiceItem?
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  tableId       String?
+  table         Table?        @relation(fields: [tableId], references: [id])
+  tableName     String        @default("")
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  discount      Int           @default(0)
+  items         InvoiceItem[]
+  payments      TablePayment[]
+  waiterId      String?
+  waiterName    String?
+  sessionStart  DateTime?
+  sessionEnd    DateTime?
+  createdAt     DateTime      @default(now())
+  settledAt     DateTime?
+}
+
+model InvoiceItem {
+  id          String     @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  name        String
+  quantity    Int
+  price       Int
+  orderItemId String?    @unique
+  orderItem   OrderItem? @relation(fields: [orderItemId], references: [id])
+}
+
+model Waiter {
+  id        String   @id @default(cuid())
+  name      String
+  pin       String
+  active    Boolean  @default(true)
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CafeSettings {
+  id             String        @id @default("singleton")
+  cafeName       String        @default("Coffee? Since 1999")
+  tagline        String        @default("")
+  address        String        @default("")
+  phone          String        @default("")
+  email          String        @default("")
+  gstNumber      String        @default("")
+  cgstRate       Float         @default(2.5)
+  sgstRate       Float         @default(2.5)
+  invoicePrefix  String        @default("INV")
+  invoiceCounter Int           @default(1)
+  dashboardMode  DashboardMode @default(KANBAN)
+  updatedAt      DateTime      @updatedAt
+}
+
+model TablePayment {
+  id        String        @id @default(cuid())
+  tableId   String
+  table     Table         @relation(fields: [tableId], references: [id])
+  invoiceId String?
+  invoice   Invoice?      @relation(fields: [invoiceId], references: [id])
+  amount    Int
+  method    PaymentMethod
+  note      String?
+  createdAt DateTime      @default(now())
+}
+
+model OtpSession {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  verified  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DONE
+  CANCELLED
+}
+
+enum OrderSource {
+  CUSTOMER
+  WAITER
+}
+
+enum OrderItemStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  SETTLED
+}
+
+enum DashboardMode {
+  KANBAN
+  ITEM
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+}

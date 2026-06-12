@@ -3,16 +3,16 @@
 import { motion } from "framer-motion";
 
 const items = [
-  "Serving Chennai Since 1999",
-  "4.4 ★ on Google",
-  "1,500+ Reviews",
-  "Thousand Lights, Chennai",
-  "Open 8AM – 11:45PM",
+  "Three Brothers. One Cafe. Since 1999.",
+  "Closed in 2008. Back in 2021.",
+  "Built by a Cinematographer",
+  "Sanremo Opera 2.0 · Italian Espresso",
+  "V60 · Chemex · Aeropress · Kalita",
   "Best Churros in Chennai",
-  "Chennai's OG Hangout",
-  "Halal Certified",
-  "Outdoor & Indoor Seating",
-  "Zomato & Swiggy Delivery",
+  "The 3rd Place · Home · Work · Here",
+  "Open Mic Nights · Every Month",
+  "Chennai's Original Café",
+  "4.4★ · 1,500+ Google Reviews",
 ];
 
 export function LegacyMarquee() {

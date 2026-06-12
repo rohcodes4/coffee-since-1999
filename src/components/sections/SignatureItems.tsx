@@ -3,12 +3,17 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { signatureItems } from "@/content/cafe";
-import type { MenuItem } from "@/types";
+import { formatPrice } from "@/lib/format";
 
-function MasonryCard({ item, index }: { item: MenuItem; index: number }) {
-  // Vary aspect ratio to create masonry rhythm
-  const aspects = ["aspect-[4/3]", "aspect-[3/4]", "aspect-square", "aspect-[4/3]", "aspect-[3/4]"];
+interface DbProduct {
+  id: string; name: string; description: string | null;
+  price: number; imageUrl: string | null;
+  signature: boolean; tag: string | null;
+}
+
+function MasonryCard({ item, index }: { item: DbProduct; index: number }) {
+  // Cycle land→square→portrait so each column gets one of each → equal column heights (boxy)
+  const aspects = ["aspect-[4/3]", "aspect-square", "aspect-[3/4]"];
   const imgAspect = aspects[index % aspects.length];
 
   return (
@@ -20,17 +25,17 @@ function MasonryCard({ item, index }: { item: MenuItem; index: number }) {
       transition={{ duration: 0.5, delay: (index % 3) * 0.08, ease: "easeOut" as const }}
       whileHover={{ y: -2 }}
     >
-      {item.image && (
+      {item.imageUrl && (
         <div className={`relative w-full ${imgAspect} overflow-hidden`}>
           <Image
-            src={item.image}
+            src={item.imageUrl}
             alt={item.name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-ink/10 group-hover:bg-ink/5 transition-colors duration-300" />
-          {item.tag && (
+          {item.tag && item.imageUrl && (
             <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-caramel text-paper font-sans text-[10px] font-bold tracking-[0.2em] uppercase">
               {item.tag}
             </span>
@@ -49,7 +54,7 @@ function MasonryCard({ item, index }: { item: MenuItem; index: number }) {
             className="font-display italic text-caramel shrink-0"
             style={{ fontSize: "1rem", fontVariationSettings: '"opsz" 20' }}
           >
-            {item.price}
+            {formatPrice(item.price)}
           </span>
         </div>
         <p className="font-sans text-xs text-ink-3 leading-relaxed line-clamp-2">{item.description}</p>
@@ -58,7 +63,7 @@ function MasonryCard({ item, index }: { item: MenuItem; index: number }) {
   );
 }
 
-export function SignatureItems() {
+export function SignatureItems({ items }: { items: DbProduct[] }) {
   return (
     <section className="bg-paper py-24 px-6 lg:px-10">
       <div className="max-w-7xl mx-auto">
@@ -92,8 +97,8 @@ export function SignatureItems() {
 
         {/* Masonry grid — 1 col on mobile, 2 on tablet, 3 on desktop */}
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-5">
-          {signatureItems.map((item, i) => (
-            <MasonryCard key={item.name} item={item} index={i} />
+          {items.map((item, i) => (
+            <MasonryCard key={item.id} item={item} index={i} />
           ))}
         </div>
       </div>

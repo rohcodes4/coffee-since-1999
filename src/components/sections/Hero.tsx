@@ -121,7 +121,6 @@ export function Hero() {
               { value: cafe.rating + "★", label: "Google Rating" },
               { value: cafe.reviewCount, label: "Reviews" },
               { value: "25+", label: "Years Open" },
-              { value: cafe.priceForTwo, label: "For Two" },
             ].map((s) => (
               <div key={s.label} className="flex flex-col">
                 <span
@@ -162,7 +161,7 @@ export function Hero() {
             <div className="absolute bottom-6 left-6 right-6">
               <span className="font-display italic text-paper text-2xl"
                 style={{ fontVariationSettings: '"opsz" 40' }}>
-                "The whole place smells like coffee."
+                "Coffee lovers, this place is for you."
               </span>
             </div>
           </div>
