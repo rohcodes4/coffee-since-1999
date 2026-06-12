@@ -2,22 +2,58 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import { LayoutDashboard, UtensilsCrossed, QrCode, ClipboardList, LogOut, Coffee, Users, Settings, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const nav = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/menu",      label: "Menu",       icon: UtensilsCrossed },
-  { href: "/admin/tables",    label: "Tables",     icon: QrCode },
-  { href: "/admin/orders",    label: "Orders",     icon: ClipboardList },
-  { href: "/admin/invoices",  label: "Invoices",   icon: FileText },
-  { href: "/admin/waiters",   label: "Waiters",    icon: Users },
-  { href: "/admin/settings",  label: "Settings",   icon: Settings },
-];
+function NavBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+  return (
+    <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-[#B86B1A] text-white font-sans font-bold text-[10px] px-1">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [draftInvoices, setDraftInvoices] = useState(0);
+
+  const fetchCounts = useCallback(async () => {
+    try {
+      const [ordersRes, invoicesRes] = await Promise.all([
+        fetch("/api/admin/orders?status=PENDING"),
+        fetch("/api/admin/invoices?status=DRAFT"),
+      ]);
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        setPendingOrders(Array.isArray(data) ? data.length : 0);
+      }
+      if (invoicesRes.ok) {
+        const data = await invoicesRes.json();
+        setDraftInvoices(Array.isArray(data) ? data.length : 0);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 30000);
+    return () => clearInterval(interval);
+  }, [pathname, fetchCounts]);
+
+  const nav = [
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, badge: pendingOrders + draftInvoices },
+    { href: "/admin/menu",      label: "Menu",       icon: UtensilsCrossed, badge: 0 },
+    { href: "/admin/tables",    label: "Tables",     icon: QrCode,          badge: 0 },
+    { href: "/admin/orders",    label: "Orders",     icon: ClipboardList,   badge: pendingOrders },
+    { href: "/admin/invoices",  label: "Invoices",   icon: FileText,        badge: draftInvoices },
+    { href: "/admin/waiters",   label: "Waiters",    icon: Users,           badge: 0 },
+    { href: "/admin/settings",  label: "Settings",   icon: Settings,        badge: 0 },
+  ];
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -40,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {nav.map(({ href, label, icon: Icon }) => (
+          {nav.map(({ href, label, icon: Icon, badge }) => (
             <Link
               key={href}
               href={href}
@@ -53,6 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <Icon size={16} />
               {label}
+              <NavBadge count={badge} />
             </Link>
           ))}
         </nav>

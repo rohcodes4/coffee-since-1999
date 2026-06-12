@@ -3,8 +3,9 @@
 import { useState, useCallback, useEffect } from "react";
 import {
   Printer, Plus, Trash2, CheckCircle2, ArrowLeft, Edit2, Save,
-  Search, X, ShoppingBag, User,
+  Search, X, ShoppingBag, User, Loader2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -102,8 +103,10 @@ export function InvoiceEditor({
   const [showAddItem, setShowAddItem] = useState(false);
   const [saving, setSaving] = useState(false);
   const [settling, setSettling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [settled, setSettled] = useState(initialStatus === "SETTLED");
   const [saveError, setSaveError] = useState("");
+  const router = useRouter();
 
   // Product picker
   const [showPicker, setShowPicker] = useState(false);
@@ -244,6 +247,18 @@ export function InvoiceEditor({
     setSettling(false);
   };
 
+  const deleteInvoice = async () => {
+    if (!confirm(`Delete invoice ${invoiceNumber}? This cannot be undone.`)) return;
+    setDeleting(true);
+    const res = await fetch(`/api/admin/invoices/${invoiceId}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push(backUrl);
+    } else {
+      setSaveError("Failed to delete invoice.");
+      setDeleting(false);
+    }
+  };
+
   const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
   const time = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 
@@ -256,9 +271,21 @@ export function InvoiceEditor({
     <div className="min-h-screen bg-[#F4ECD9]">
       {/* Controls bar */}
       <div className="print:hidden bg-white border-b border-[#CFC0A0] px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-        <a href={backUrl} className="flex items-center gap-2 font-sans text-sm text-[#5A3A1E] hover:text-[#1A0B04] transition-colors">
-          <ArrowLeft size={16} /> Back
-        </a>
+        <div className="flex items-center gap-3">
+          <a href={backUrl} className="flex items-center gap-2 font-sans text-sm text-[#5A3A1E] hover:text-[#1A0B04] transition-colors">
+            <ArrowLeft size={16} /> Back
+          </a>
+          {!settled && (
+            <button
+              onClick={deleteInvoice}
+              disabled={deleting}
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-red-200 text-red-600 rounded-xl font-sans text-xs font-semibold hover:bg-red-50 transition-colors disabled:opacity-40"
+            >
+              {deleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+              {deleting ? "Deleting…" : "Delete"}
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           {settled ? (
             <span className="flex items-center gap-1.5 font-sans text-sm text-green-600 font-semibold">
