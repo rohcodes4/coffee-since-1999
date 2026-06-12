@@ -6,106 +6,103 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { cafe } from "@/content/cafe";
 
-const navLinks = [
-  { label: "Menu", href: "/menu" },
+const links = [
+  { label: "Menu",      href: "/menu" },
   { label: "Our Story", href: "#story" },
-  { label: "Visit", href: "#visit" },
+  { label: "Visit",     href: "#visit" },
 ];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <>
-      <motion.nav
+      <motion.header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          "fixed top-0 inset-x-0 z-50 transition-all duration-500",
           scrolled
-            ? "bg-espresso/95 backdrop-blur-md border-b border-bark/20 py-3"
+            ? "bg-paper/90 backdrop-blur-sm border-b border-line py-3"
             : "bg-transparent py-5"
         )}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
-          <a href="/" className="flex flex-col leading-none group">
-            <span className="font-display text-2xl font-semibold text-cream tracking-tight group-hover:text-caramel transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between">
+          <a href="/" className="group flex flex-col leading-none">
+            <span
+              className="font-display text-[1.6rem] font-semibold text-ink tracking-tight"
+              style={{ fontVariationSettings: '"opsz" 40' }}
+            >
               Coffee?
             </span>
-            <span className="font-sans text-[10px] font-medium tracking-[0.25em] uppercase text-cream/40">
+            <span className="font-sans text-[9px] font-medium tracking-[0.35em] uppercase text-ink-3 -mt-0.5">
               Since 1999
             </span>
           </a>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <nav className="hidden md:flex items-center gap-10">
+            {links.map((l) => (
               <a
-                key={link.label}
-                href={link.href}
-                className="font-sans text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200 tracking-wide"
+                key={l.label}
+                href={l.href}
+                className="font-sans text-sm font-medium text-ink-2 hover:text-ink transition-colors duration-200 tracking-wide"
               >
-                {link.label}
+                {l.label}
               </a>
             ))}
-          </div>
+          </nav>
 
-          {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <motion.a
+            <a
               href={cafe.zomato}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2 rounded-full bg-caramel text-espresso text-sm font-sans font-semibold hover:bg-caramel-light transition-colors duration-200"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="px-5 py-2.5 rounded-full bg-ink text-paper font-sans text-xs font-semibold tracking-wide hover:bg-ink-2 transition-colors duration-200"
             >
               Order Now
-            </motion.a>
+            </a>
           </div>
 
-          {/* Mobile toggle */}
           <button
-            className="md:hidden text-cream p-1"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            className="md:hidden text-ink p-1"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-      </motion.nav>
+      </motion.header>
 
-      {/* Mobile menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {open && (
           <motion.div
-            className="fixed inset-0 z-40 bg-espresso flex flex-col pt-24 px-8 pb-12"
+            className="fixed inset-0 z-40 bg-paper flex flex-col pt-24 px-8 pb-12"
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.28, ease: "easeInOut" }}
           >
-            <div className="flex flex-col gap-8 mt-4">
-              {navLinks.map((link, i) => (
+            <div className="flex flex-col gap-10 mt-4">
+              {links.map((l, i) => (
                 <motion.a
-                  key={link.label}
-                  href={link.href}
-                  className="font-display text-4xl font-light text-cream/80 hover:text-caramel transition-colors"
-                  initial={{ opacity: 0, x: 20 }}
+                  key={l.label}
+                  href={l.href}
+                  className="font-display text-5xl font-light text-ink hover:text-caramel transition-colors"
+                  style={{ fontVariationSettings: '"opsz" 60' }}
+                  initial={{ opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.07 }}
-                  onClick={() => setMobileOpen(false)}
+                  transition={{ delay: i * 0.06 }}
+                  onClick={() => setOpen(false)}
                 >
-                  {link.label}
+                  {l.label}
                 </motion.a>
               ))}
             </div>
@@ -114,8 +111,8 @@ export function Navbar() {
                 href={cafe.zomato}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center px-6 py-4 rounded-full bg-caramel text-espresso font-sans font-semibold text-base"
-                onClick={() => setMobileOpen(false)}
+                className="block w-full text-center px-6 py-4 rounded-full bg-ink text-paper font-sans font-semibold text-sm"
+                onClick={() => setOpen(false)}
               >
                 Order Now
               </a>

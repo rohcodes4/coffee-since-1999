@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Wifi, UtensilsCrossed, Car, Music } from "lucide-react";
+import Image from "next/image";
+import { Wifi, UtensilsCrossed, Car, Music, CircleDot } from "lucide-react";
 
 const vibePoints = [
   { icon: Wifi, label: "Free WiFi" },
@@ -10,27 +11,21 @@ const vibePoints = [
   { icon: Music, label: "Open Mic Nights" },
 ];
 
-const photoSlots = [
+const placeImages = [
   {
-    label: "The Space",
-    sub: "Indoor & outdoor seating with a view of the football turf",
-    accent: "bg-caramel/10",
-    border: "border-caramel/20",
-    size: "row-span-2",
+    src: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&h=950&fit=crop&q=85",
+    alt: "Coffee? Since 1999 — warm indoor seating",
+    className: "row-span-2",
   },
   {
-    label: "The Coffee",
-    sub: "Specialty coffee that fills the room with warmth",
-    accent: "bg-bark/10",
-    border: "border-bark/20",
-    size: "",
+    src: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=650&h=450&fit=crop&q=85",
+    alt: "Cafe seating with natural light",
+    className: "",
   },
   {
-    label: "The Food",
-    sub: "From churros to grilled sandwiches — something for everyone",
-    accent: "bg-roast",
-    border: "border-bark/20",
-    size: "",
+    src: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=650&h=450&fit=crop&q=85",
+    alt: "Cozy cafe corner with warm lights",
+    className: "",
   },
 ];
 
@@ -63,7 +58,7 @@ export function TheVibe() {
 
           {/* Football turf callout */}
           <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-caramel/20 bg-caramel/5 mb-10">
-            <span className="text-caramel text-xl">⚽</span>
+            <CircleDot size={16} className="text-caramel shrink-0" />
             <p className="font-sans text-sm text-cream/60">
               <span className="text-cream font-medium">One-of-a-kind view</span> — glass walls
               overlook a live football turf
@@ -83,7 +78,7 @@ export function TheVibe() {
           </div>
         </motion.div>
 
-        {/* Right: photo grid placeholder */}
+        {/* Right: photo grid with real images */}
         <motion.div
           className="grid grid-cols-2 grid-rows-2 gap-3 h-[480px]"
           initial={{ opacity: 0, x: 30 }}
@@ -91,36 +86,34 @@ export function TheVibe() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.15 }}
         >
-          {photoSlots.map((slot, i) => (
+          {placeImages.map((img, i) => (
             <motion.div
-              key={slot.label}
-              className={`relative rounded-2xl border ${slot.border} ${slot.accent} overflow-hidden flex flex-col justify-end p-5 ${slot.size}`}
+              key={img.alt}
+              className={`relative rounded-2xl overflow-hidden ${img.className}`}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
             >
-              {/* Placeholder pattern */}
-              <div
-                className="absolute inset-0 opacity-[0.06]"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)",
-                  backgroundSize: "20px 20px",
-                  color: "var(--caramel)",
-                }}
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
-              {/* Photo prompt overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-sans text-xs text-cream/20 text-center px-4">
-                  Add photo
-                  <br />
-                  <span className="text-cream/10">{slot.label}</span>
-                </span>
-              </div>
-              {/* Label */}
-              <div className="relative z-10">
-                <p className="font-display text-base font-medium text-cream/70">{slot.label}</p>
-                <p className="font-sans text-xs text-cream/30 mt-0.5 leading-snug">{slot.sub}</p>
-              </div>
+              {/* Subtle dark overlay */}
+              <div className="absolute inset-0 bg-ink/20 hover:bg-ink/10 transition-colors duration-300" />
+              {/* Label on first (large) card */}
+              {i === 0 && (
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="font-display italic text-paper/80 text-sm"
+                    style={{ fontVariationSettings: '"opsz" 20' }}>
+                    The Space
+                  </span>
+                </div>
+              )}
             </motion.div>
           ))}
         </motion.div>

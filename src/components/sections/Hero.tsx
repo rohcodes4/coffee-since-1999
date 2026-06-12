@@ -1,154 +1,185 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { cafe } from "@/content/cafe";
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.15, duration: 0.7, ease: "easeOut" as const },
-  }),
-};
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-espresso">
-      {/* Background year */}
+    <section className="relative min-h-screen bg-paper overflow-hidden flex flex-col">
+      {/* Big background year — ink at 3% opacity */}
       <div
-        className="absolute inset-0 flex items-center justify-center select-none pointer-events-none"
         aria-hidden
+        className="pointer-events-none select-none absolute inset-0 flex items-end justify-start overflow-hidden"
       >
         <span
-          className="font-display font-bold text-[28vw] leading-none text-cream/[0.03] tracking-tighter"
-          style={{ userSelect: "none" }}
+          className="font-display font-black text-[38vw] leading-[0.8] text-ink/[0.04] tracking-tighter pl-4 pb-0"
+          style={{ fontVariationSettings: '"opsz" 144, "WONK" 0' }}
         >
           1999
         </span>
       </div>
 
-      {/* Grain texture overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px",
-        }}
-      />
+      <div className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_500px] gap-0 pt-28 lg:pt-0">
 
-      {/* Radial gradient glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212,144,63,0.08) 0%, transparent 70%)",
-        }}
-      />
+        {/* ── Left column: typography ── */}
+        <div className="flex flex-col justify-center py-20 lg:py-0">
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <div className="max-w-4xl">
-          {/* Rating badge */}
+          {/* Eyebrow */}
           <motion.div
-            className="flex items-center gap-2 mb-10"
-            custom={0}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
+            className="flex items-center gap-4 mb-10"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.05 }}
           >
-            <div className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-caramel/30 bg-caramel/10">
-              <Star size={13} className="fill-caramel text-caramel" />
-              <span className="font-sans text-xs font-medium text-caramel tracking-wider">
-                {cafe.rating} · {cafe.reviewCount} Reviews · Chennai&apos;s OG since 1999
-              </span>
-            </div>
+            <span className="block w-8 h-px bg-caramel" />
+            <span className="font-sans text-xs font-semibold tracking-[0.3em] uppercase text-caramel">
+              Est. 1999 · Thousand Lights · Chennai
+            </span>
           </motion.div>
 
           {/* Main headline */}
-          <div className="overflow-hidden mb-2">
+          <div className="overflow-visible mb-4">
             <motion.h1
-              className="font-display font-light text-[clamp(5rem,13vw,11rem)] leading-[0.9] tracking-tight text-cream"
-              custom={1}
-              variants={fadeUp}
-              initial="hidden"
-              animate="show"
+              className="font-display font-light leading-[0.88] tracking-tight text-ink"
+              style={{
+                fontSize: "clamp(5.5rem, 16vw, 13rem)",
+                fontVariationSettings: '"opsz" 144',
+              }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.1 }}
             >
               Coffee
-              <span className="text-caramel italic">?</span>
+              <span className="italic text-caramel">?</span>
             </motion.h1>
           </div>
 
+          {/* Since / tagline strip */}
           <motion.div
-            className="flex items-center gap-5 mb-8"
-            custom={2}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
+            className="flex items-baseline gap-6 mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
           >
-            <div className="h-px w-16 bg-caramel/40" />
-            <span className="font-sans text-sm font-medium tracking-[0.35em] uppercase text-cream/40">
-              Since 1999 · Thousand Lights · Chennai
+            <span
+              className="font-display italic font-light text-ink-3"
+              style={{ fontSize: "clamp(1.5rem, 4vw, 3rem)", fontVariationSettings: '"opsz" 60' }}
+            >
+              since
+            </span>
+            <span
+              className="font-display font-bold text-ink"
+              style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)", fontVariationSettings: '"opsz" 72, "WONK" 0' }}
+            >
+              1999
             </span>
           </motion.div>
 
           <motion.p
-            className="font-sans text-lg text-cream/50 max-w-xl leading-relaxed mb-12"
-            custom={3}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
+            className="font-sans text-base text-ink-2 leading-relaxed max-w-sm mb-12"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
           >
             {cafe.description}
           </motion.p>
 
           {/* CTAs */}
           <motion.div
-            className="flex flex-wrap items-center gap-4"
-            custom={4}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
+            className="flex flex-wrap items-center gap-5 mb-14"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
           >
-            <motion.a
+            <a
               href="/menu"
-              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-caramel text-espresso font-sans font-semibold text-sm hover:bg-caramel-light transition-colors duration-200"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="group inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink border-b-2 border-ink pb-0.5 hover:border-caramel hover:text-caramel transition-all duration-200"
             >
               View Menu
-              <ArrowRight
-                size={16}
-                className="group-hover:translate-x-1 transition-transform duration-200"
-              />
-            </motion.a>
-
-            <motion.a
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+            <a
               href={cafe.zomato}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-cream/20 text-cream/70 font-sans font-medium text-sm hover:border-cream/40 hover:text-cream transition-all duration-200"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ink text-paper font-sans text-sm font-medium hover:bg-ink-2 transition-colors"
             >
               Order on Zomato
-            </motion.a>
+            </a>
+          </motion.div>
+
+          {/* Stats strip */}
+          <motion.div
+            className="flex items-center gap-6 pt-8 border-t border-line"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            {[
+              { value: cafe.rating + "★", label: "Google Rating" },
+              { value: cafe.reviewCount, label: "Reviews" },
+              { value: "25+", label: "Years Open" },
+              { value: cafe.priceForTwo, label: "For Two" },
+            ].map((s) => (
+              <div key={s.label} className="flex flex-col">
+                <span
+                  className="font-display font-semibold text-ink text-xl leading-tight"
+                  style={{ fontVariationSettings: '"opsz" 30' }}
+                >
+                  {s.value}
+                </span>
+                <span className="font-sans text-[10px] uppercase tracking-wider text-ink-3">{s.label}</span>
+              </div>
+            ))}
           </motion.div>
         </div>
+
+        {/* ── Right column: tall image ── */}
+        <motion.div
+          className="hidden lg:flex items-stretch relative"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          {/* Decorative line */}
+          <div className="absolute left-0 top-1/4 bottom-1/4 w-px bg-line" />
+
+          <div className="relative ml-10 w-full mt-24 mb-10 rounded-2xl overflow-hidden">
+            <Image
+              src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=900&fit=crop&q=85"
+              alt="Coffee at Coffee? Since 1999"
+              fill
+              className="object-cover"
+              priority
+              sizes="500px"
+            />
+            {/* Warm overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+
+            {/* Floating label */}
+            <div className="absolute bottom-6 left-6 right-6">
+              <span className="font-display italic text-paper text-2xl"
+                style={{ fontVariationSettings: '"opsz" 40' }}>
+                "The whole place smells like coffee."
+              </span>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Bottom scroll indicator */}
+      {/* Bottom scroll hint */}
       <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.5 }}
+        transition={{ delay: 1.4 }}
       >
         <motion.div
-          className="w-px h-12 bg-gradient-to-b from-transparent via-cream/20 to-transparent"
-          animate={{ scaleY: [1, 1.3, 1], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-10 bg-line"
+          animate={{ scaleY: [0.5, 1, 0.5], opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity }}
         />
       </motion.div>
     </section>

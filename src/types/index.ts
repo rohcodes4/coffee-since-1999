@@ -2,9 +2,23 @@ export interface MenuItem {
   name: string;
   description: string;
   price: string;
-  category: "coffee" | "tea" | "food" | "other";
+  category: string;
   signature?: boolean;
   tag?: string;
+  image?: string;
+  veg?: boolean;
+  vegan?: boolean;
+}
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+}
+
+export interface GalleryImage {
+  src: string;
+  alt: string;
+  aspect: "portrait" | "landscape" | "square";
 }
 
 export interface Hours {
@@ -35,9 +49,9 @@ export interface CafeInfo {
   zomato?: string;
   swiggy?: string;
   mapsUrl?: string;
-  mapsEmbed?: string;
   rating?: string;
   reviewCount?: string;
   priceForTwo?: string;
   menu: MenuItem[];
+  gallery: GalleryImage[];
 }
