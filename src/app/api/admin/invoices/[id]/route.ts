@@ -29,6 +29,7 @@ const updateSchema = z.object({
   discount: z.number().min(0).optional(),
   items: z.array(itemSchema).optional(),
   waiterName: z.string().optional().nullable(),
+  waiterId: z.string().optional().nullable(),
 });
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -37,12 +38,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
 
-  const { notes, discount, items, waiterName } = parsed.data;
+  const { notes, discount, items, waiterName, waiterId } = parsed.data;
 
   const updateData: Record<string, unknown> = {};
   if (notes !== undefined) updateData.notes = notes;
   if (discount !== undefined) updateData.discount = Math.round(discount * 100);
   if (waiterName !== undefined) updateData.waiterName = waiterName;
+  if (waiterId !== undefined) updateData.waiterId = waiterId;
 
   // Replace all items if provided
   if (items !== undefined) {

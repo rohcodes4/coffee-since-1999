@@ -1,14 +1,14 @@
 import { db } from "@/lib/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { InvoiceEditor } from "@/components/invoice/InvoiceEditor";
 import type { InvoiceItemData, PaymentData } from "@/components/invoice/InvoiceEditor";
-import { getAdminTokenFromCookies, verifyAdminToken } from "@/lib/auth";
+import { getWaiterFromCookies } from "@/lib/waiter-auth";
 
-export default async function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function WaiterInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const adminToken = await getAdminTokenFromCookies();
-  const isAdmin = !!(adminToken && verifyAdminToken(adminToken));
+  const waiterInfo = await getWaiterFromCookies();
+  if (!waiterInfo) redirect("/waiter/login");
 
   const [invoice, settings] = await Promise.all([
     db.invoice.findUnique({
@@ -62,8 +62,8 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
       initialItems={items}
       initialPayments={payments}
       settings={settings}
-      backUrl="/admin/invoices"
-      role={isAdmin ? "admin" : "waiter"}
+      backUrl="/waiter/tables"
+      role="waiter"
     />
   );
 }

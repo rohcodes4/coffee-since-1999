@@ -185,7 +185,7 @@ export function WaiterOrderClient({
         <span className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1rem" }}>{table.label}</span>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => router.push(`/admin/invoices/new?tableId=${table.id}`)}
+            onClick={() => router.push(`/waiter/invoices/new?tableId=${table.id}`)}
             className="flex items-center gap-1 px-2.5 py-1.5 border border-[#CFC0A0] rounded-xl font-sans text-xs text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors"
           >
             <FileText size={12} /> Invoice
