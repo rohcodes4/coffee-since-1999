@@ -15,8 +15,10 @@ export async function POST(req: Request) {
 
   const { phone, code } = parsed.data;
 
-  // Dummy bypass for development when OTP service is not set up
-  const isDummyBypass = process.env.NODE_ENV !== "production" && code === "000000";
+  // Dummy bypass: enabled in dev always, or in prod when BYPASS_OTP=true
+  const isDummyBypass =
+    (process.env.NODE_ENV !== "production" || process.env.BYPASS_OTP === "true") &&
+    code === "000000";
 
   if (!isDummyBypass) {
     const session = await db.otpSession.findFirst({
