@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Plus, Minus, ShoppingBag, X, ChevronRight, Phone, Loader2, CheckCircle2, Leaf, Coffee, ArrowLeft, Search, Bell, Receipt } from "lucide-react";
 import { formatPrice } from "@/lib/format";
@@ -34,6 +34,14 @@ export function OrderClient({
   // Table request state
   const [callStatus, setCallStatus] = useState<"idle" | "loading" | "sent">("idle");
   const [billStatus, setBillStatus] = useState<"idle" | "loading" | "sent">("idle");
+  const callRequestIdRef = useRef<string | null>(null);
+  const callPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (callPollRef.current) clearInterval(callPollRef.current);
+    };
+  }, []);
 
   // OTP / checkout state
   const [phone, setPhone] = useState("");
@@ -76,12 +84,27 @@ export function OrderClient({
   async function callWaiter() {
     if (callStatus !== "idle") return;
     setCallStatus("loading");
-    await fetch("/api/table-requests", {
+    const res = await fetch("/api/table-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ tableId: table.id, type: "CALL_WAITER" }),
     });
+    const data = await res.json();
+    callRequestIdRef.current = data.id;
     setCallStatus("sent");
+
+    if (callPollRef.current) clearInterval(callPollRef.current);
+    callPollRef.current = setInterval(async () => {
+      if (!callRequestIdRef.current) return;
+      const statusRes = await fetch(`/api/table-requests/${callRequestIdRef.current}`);
+      if (!statusRes.ok) return;
+      const statusData = await statusRes.json();
+      if (statusData.status === "ATTENDED") {
+        setCallStatus("idle");
+        callRequestIdRef.current = null;
+        if (callPollRef.current) clearInterval(callPollRef.current);
+      }
+    }, 10000);
   }
 
   async function requestBill() {
