@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
   LayoutDashboard, QrCode, ClipboardList, FileText, Users, Settings,
-  ShoppingBag, History, Search, Printer, CheckCircle2, AlertCircle,
-  Coffee, Smartphone, ArrowRight,
+  ShoppingBag, History, Printer, CheckCircle2, AlertCircle,
+  Coffee, Smartphone, ArrowRight, Bell,
 } from "lucide-react";
 
 function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
@@ -79,6 +79,7 @@ export default function HelpPage() {
             { href: "#admin", label: "Admin Portal" },
             { href: "#waiter", label: "Waiter Portal" },
             { href: "#customer", label: "Customer QR" },
+            { href: "#table-requests", label: "Table Requests" },
             { href: "#invoices", label: "Invoices" },
             { href: "#workflows", label: "Workflows" },
           ].map(({ href, label }) => (
@@ -214,7 +215,8 @@ export default function HelpPage() {
             <FeatureCard icon={QrCode} title="Table Grid" desc="Shows all tables with Occupied/Available status and active order count. Tap any table to start ordering." />
             <FeatureCard icon={ShoppingBag} title="Menu & Cart" desc="Responsive grid layout. Search across all items. Category tabs for filtering. Add items and submit without OTP." />
             <FeatureCard icon={History} title="Today's History" desc="Tab on the ordering screen shows all orders placed for that table today, including settled sessions." />
-            <FeatureCard icon={FileText} title="Invoice Access" desc="Invoice button on every table. Waiters have full invoice power — same as admin." />
+            <FeatureCard icon={FileText} title="Invoice Access" desc="Invoice button on every table. Full invoice list at /waiter/invoices. Waiters have full invoice power — same as admin." />
+            <FeatureCard icon={Bell} title="Table Request Alerts" desc="Persistent banner appears when a customer taps Call Waiter or Request Bill. Tap Mark Attended to resolve." />
           </div>
 
           <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">Ordering Screen Tabs</h3>
@@ -259,6 +261,7 @@ export default function HelpPage() {
             <Step n={3} title="Checkout">Open the cart, review items, add special instructions, then tap "Proceed to Verify".</Step>
             <Step n={4} title="OTP verification">Enter mobile number → receive SMS OTP → enter 6-digit code to confirm identity.</Step>
             <Step n={5} title="Order confirmed">Order appears in the admin dashboard immediately. Customer sees a confirmation with order total.</Step>
+            <Step n={6} title="Call Waiter / Request Bill">After ordering, customers see two additional buttons on the confirmation screen to alert staff.</Step>
           </div>
 
           <div className="bg-[#EDE1C8] rounded-2xl px-5 py-4 flex items-start gap-3">
@@ -266,6 +269,45 @@ export default function HelpPage() {
             <p className="font-sans text-xs text-[#5A3A1E]">
               During development, OTP code <code className="font-mono bg-[#CFC0A0]/40 px-1.5 py-0.5 rounded">000000</code> bypasses SMS verification. Remove this bypass in production.
             </p>
+          </div>
+        </Section>
+
+        {/* Table Requests */}
+        <Section id="table-requests" title="Table Requests — Call Waiter & Request Bill">
+          <p className="font-sans text-sm text-[#5A3A1E] mb-6 leading-relaxed">
+            Customers can alert staff directly from the order confirmation screen. Two request types are supported:
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-3 mb-6">
+            <div className="bg-white border border-[#CFC0A0] rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Bell size={14} className="text-[#B86B1A]" />
+                <p className="font-sans font-semibold text-sm text-[#1A0B04]">Call Waiter</p>
+              </div>
+              <p className="font-sans text-xs text-[#9A7A56] leading-relaxed">
+                Customer needs assistance at the table. An alert appears immediately in both the waiter and admin portals.
+              </p>
+            </div>
+            <div className="bg-white border border-[#CFC0A0] rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText size={14} className="text-[#B86B1A]" />
+                <p className="font-sans font-semibold text-sm text-[#1A0B04]">Request Bill</p>
+              </div>
+              <p className="font-sans text-xs text-[#9A7A56] leading-relaxed">
+                Customer is ready to pay. Alerts staff to bring the bill. Same alert system as Call Waiter.
+              </p>
+            </div>
+          </div>
+
+          <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">How alerts appear</h3>
+          <div className="bg-white border border-[#CFC0A0] rounded-2xl p-5 mb-4">
+            <ul className="font-sans text-xs text-[#9A7A56] space-y-2">
+              <li className="flex items-start gap-2"><ArrowRight size={12} className="text-[#B86B1A] shrink-0 mt-0.5" /><span>A persistent alert banner appears at the top of the <strong>waiter portal</strong> and <strong>admin portal</strong>.</span></li>
+              <li className="flex items-start gap-2"><ArrowRight size={12} className="text-[#B86B1A] shrink-0 mt-0.5" /><span>The banner shows the table name, request type, and how long ago it was sent.</span></li>
+              <li className="flex items-start gap-2"><ArrowRight size={12} className="text-[#B86B1A] shrink-0 mt-0.5" /><span>Multiple pending requests are stacked in the banner.</span></li>
+              <li className="flex items-start gap-2"><ArrowRight size={12} className="text-[#B86B1A] shrink-0 mt-0.5" /><span>Click <strong>"Mark Attended"</strong> to dismiss the alert and record who attended.</span></li>
+              <li className="flex items-start gap-2"><ArrowRight size={12} className="text-[#B86B1A] shrink-0 mt-0.5" /><span>The admin dashboard also has a dedicated <strong>Table Requests panel</strong> for an overview of all pending requests.</span></li>
+            </ul>
           </div>
         </Section>
 
@@ -289,9 +331,11 @@ export default function HelpPage() {
           <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">Invoice Editor Features</h3>
           <div className="grid sm:grid-cols-2 gap-3 mb-6">
             <FeatureCard icon={CheckCircle2} title="Item Selection" desc="Checkboxes to include/exclude specific items. Uncheck to leave items for the next invoice." />
-            <FeatureCard icon={FileText} title="Manual Line Items" desc="Add any custom item (name, qty, price) not from the order system." />
-            <FeatureCard icon={ShoppingBag} title="Partial Payments" desc="Record multiple payment entries — Cash, Card, UPI — any combination. Live balance shown." />
+            <FeatureCard icon={FileText} title="Manual Line Items" desc="Add any custom item (name, qty, price) or pick from the product menu." />
+            <FeatureCard icon={ShoppingBag} title="Partial Payments" desc="Record multiple payment entries — Cash, Card, UPI. Edit or delete existing entries. Live balance shown." />
             <FeatureCard icon={Printer} title="Print Invoice" desc="Prints a clean invoice layout. Sidebar and controls are hidden. Shows GST breakdown and session duration." />
+            <FeatureCard icon={Users} title="Waiter Assignment" desc="Select or reassign the waiter responsible for this invoice via dropdown." />
+            <FeatureCard icon={Bell} title="Notification Badges" desc="Sidebar shows badge counts for open invoices and pending table requests." />
           </div>
 
           <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">What happens when you settle</h3>
@@ -363,6 +407,8 @@ export default function HelpPage() {
                   ["View table order history", "✓", "✓ (today)"],
                   ["Create & settle invoices", "✓", "✓"],
                   ["Print invoices", "✓", "✓"],
+                  ["Attend table requests", "✓", "✓"],
+                  ["Receive table request alerts", "✓", "✓"],
                 ].map(([feature, admin, waiter]) => (
                   <tr key={feature}>
                     <td className="px-4 py-2.5 text-[#1A0B04] text-xs">{feature}</td>

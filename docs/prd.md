@@ -43,17 +43,24 @@ A full-stack cafe management system built on Next.js 16. Customers order via QR 
 - Expandable rows with full item list, notes, waiter/phone info
 - Manual status overrides
 
-### 5. Invoice Generation
-- Navigate to `/admin/tables/[id]/invoice` from Tables page
-- Shows all non-cancelled orders for the table (items selectable)
-- Auto-generated sequential invoice number (`INV-0042`)
-- Itemised list with per-item amounts
-- GST breakdown: Subtotal → CGST → SGST → Total
-- Waiter name and table label on header
-- Partial payment panel: Cash / Card / UPI, multiple entries
-- Live balance calculation
+### 5. Invoice Generation & Management
+- Invoice list at `/admin/invoices` (and `/waiter/invoices`) with status filter: Draft / Issued / Settled
+- Create from a table (auto-fills uninvoiced items) or blank manual invoice
+- Auto-generated sequential invoice number (`INV-0042`, counter in CafeSettings)
+- Invoice editor (shared between admin and waiter):
+  - Items section: checkboxes to include/exclude, "Add item" for manual line items, product picker from menu
+  - Quantity editing per line item
+  - Discount field (₹ amount applied before GST)
+  - Notes field (printed on invoice)
+  - Waiter assignment dropdown
+  - GST breakdown: Subtotal → CGST → SGST → Grand Total
+- Payment panel: Cash / Card / UPI entries, multiple splits supported
+  - Edit or delete existing payment entries
+  - Live balance calculation
+- "Settle Invoice" — stamps included items as invoiced, resets table session
+- Invoice delete (from list page)
 - Print via `window.print()` — only invoice visible in print
-- "Mark Table Settled" when balance = 0 → resets table to AVAILABLE
+- Sidebar notification badge showing draft/open invoice count
 
 ### 6. Admin: Table Management
 - CRUD for tables (number + label)
@@ -77,6 +84,15 @@ A full-stack cafe management system built on Next.js 16. Customers order via QR 
 - Cafe name, tagline, address, phone, email
 - GSTIN, CGST rate, SGST rate
 - Invoice prefix and current counter preview
+- Dashboard mode: Kanban or Item view
+
+### 10. Table Requests (Call Waiter / Request Bill)
+- Customer order page shows "Call Waiter" and "Request Bill" buttons
+- Tapping posts a `TableRequest` (type: CALL_WAITER or BILL_REQUEST)
+- Admin layout polls for pending requests — shows a persistent banner with table name and request type
+- Waiter layout polls for pending requests — same persistent banner
+- "Mark Attended" dismisses the request (records who attended and timestamp)
+- Requests are scoped by role: waiter API serves waiter portal; admin API serves admin portal
 
 ---
 
@@ -87,7 +103,10 @@ A full-stack cafe management system built on Next.js 16. Customers order via QR 
 - **OrderItem**: snapshot of product name + price at order time
 - **Waiter**: name, pin (bcrypt), active flag
 - **CafeSettings**: singleton row for all invoice/tax config
-- **TablePayment**: per-payment record (method, amount, invoiceNumber)
+- **Invoice**: invoice number, status (DRAFT/ISSUED/SETTLED), items, discount, notes, session timestamps
+- **InvoiceItem**: snapshot of name/qty/price; optionally linked to an OrderItem
+- **TablePayment**: per-payment record (method, amount, linked to Invoice)
+- **TableRequest**: customer request record (CALL_WAITER/BILL_REQUEST, PENDING/ATTENDED)
 - **OtpSession**: phone, code, verified, expiresAt
 
 ---

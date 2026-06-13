@@ -25,14 +25,21 @@ src/
     layout.tsx                    # Root layout (fonts, loading screen)
     order/[tableId]/              # Customer QR ordering flow
     waiter/                       # Waiter device app
+      page.tsx                    # Redirects → /waiter/tables
       login/                      # PIN login
-      tables/                     # Table selection grid
+      tables/                     # Table selection grid (AVAILABLE/OCCUPIED, order counts)
       [tableId]/                  # Waiter ordering (no OTP)
+      invoices/                   # Waiter invoice list
+        new/                      # Create invoice (waiter)
+        [id]/                     # View/edit invoice (waiter)
     admin/                        # Admin panel (protected)
       dashboard/                  # Live kanban orders
       menu/                       # Category + product CRUD
       tables/                     # Table + QR management
         [id]/invoice/             # Invoice generation + payment
+      invoices/                   # Invoice list (all statuses)
+        new/                      # Blank manual invoice
+        [id]/                     # Invoice editor
       orders/                     # Order history
       waiters/                    # Waiter staff CRUD
       settings/                   # Cafe settings (GST, address)
@@ -41,15 +48,23 @@ src/
       menu/                       # Public menu API
       orders/                     # Create order (customer + waiter)
       otp/send|verify/            # OTP flow
-      waiter/login|logout|list|me/# Waiter auth APIs
+      table-requests/             # Customer POST (call waiter / bill request)
+      waiter/
+        login|logout|list|me/     # Waiter auth APIs
+        tables-status/            # Table grid with order counts
+        table-requests/[id]/attend/ # Waiter attends a table request
       admin/
         login|logout/             # Admin auth
         orders/[id]/              # Order CRUD
         tables/[id]/qr|invoice|payment|settle/
         waiters/[id]/             # Waiter CRUD
+        invoices/[id]/payments/[paymentId]/ # Edit/delete payment entries
+        table-requests/[id]/attend/ # Admin attends a table request
         settings/                 # CafeSettings singleton
   components/
     ui/                           # MenuCard, Button, Badge, DietaryBadge
+    invoice/
+      InvoiceEditor.tsx           # Shared invoice editor (admin + waiter)
     sections/                     # Hero, OurStory, TheCraft, etc.
   content/
     cafe.ts                       # All marketing copy + static menu data
@@ -112,3 +127,5 @@ POST /api/orders         POST /api/orders          Generate invoice
 - **Notification sound**: Web Audio API oscillator, initialised on first user click to satisfy browser autoplay policy.
 - **Invoice print**: `@media print` CSS hides sidebar and payment panel; only `#invoice` div is visible.
 - **Table status**: Set to OCCUPIED on first order, AVAILABLE when settled via `/api/admin/tables/[id]/settle`.
+- **Table requests**: Customers post `CALL_WAITER` or `BILL_REQUEST` from the order page. Both admin and waiter layouts poll for pending requests and display a persistent alert banner until attended.
+- **Shared InvoiceEditor**: `src/components/invoice/InvoiceEditor.tsx` is used by both the admin and waiter portals — role differences (e.g. settle permissions) controlled by props.

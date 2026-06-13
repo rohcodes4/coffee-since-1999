@@ -1,6 +1,6 @@
 # Coffee Since 1999 — Staff Portal Help Guide
 
-Last updated: 2026-06-13
+Last updated: 2026-06-13 (commits c798c85 → 34761ee)
 
 ---
 
@@ -33,6 +33,8 @@ Live view of all active orders, auto-refreshes every 30 seconds with an audio ch
 
 **Audio notification:** A two-tone chime plays when a new Pending order arrives. Click anywhere on the page first to enable browser audio.
 
+**Table Requests panel:** Shows pending "Call Waiter" and "Request Bill" alerts from customers. Each entry shows the table name, request type, and time. Click "Mark Attended" to dismiss. Also visible as a persistent banner in the admin sidebar when requests are outstanding.
+
 ---
 
 ### Tables (`/admin/tables`)
@@ -43,6 +45,11 @@ Manage physical tables and their QR codes.
 - **Status badge** — shows Occupied (amber) or Available (green)
 - **QR Code** — click "Show QR" to preview; "Download" to save a printable PNG
 - **Invoice button** — amber when occupied (uninvoiced items exist), outlined when empty — always clickable to create a new invoice for that table
+
+### Sidebar Notification Badges
+The admin sidebar shows badge counts on:
+- **Invoices** — number of Draft/open invoices
+- **Dashboard** — number of pending table requests (Call Waiter / Bill Request)
 
 ---
 
@@ -66,10 +73,14 @@ All invoices with status filter (Draft / Issued / Settled). Click "Open" to view
 **Blank manual invoice:** Click "New Invoice" on the invoices list page — creates a blank invoice you can fill manually.
 
 #### Invoice editor
-- **Items section** — all order items for the table are listed with checkboxes. Uncheck any item to exclude it from this invoice. Use "Add item" to add a manual line (name, qty, price in ₹).
+- **Items section** — all order items for the table are listed with checkboxes. Uncheck any item to exclude it from this invoice. Use "Add item" to add a manual line (name, qty, price in ₹). Use the product picker to add items directly from the menu.
+- **Quantity editing** — edit the quantity of any line item directly in the editor
+- **Waiter assignment** — select or reassign the waiter for this invoice via dropdown
 - **Discount** — enter a discount amount in ₹ (applied to the total before GST)
 - **Notes** — internal or printed note on the invoice
 - **Payments** — record partial or full payments: select method (Cash / Card / UPI), enter amount, click Add. Multiple payment entries are supported. The running balance updates live.
+  - Edit an existing payment entry (change amount or method)
+  - Delete a payment entry
 - **Save Draft** — saves changes without settling
 - **Settle Invoice** — marks invoice as Settled, stamps all included items as invoiced, and resets the table session. If the table has remaining uninvoiced items, it stays Occupied; otherwise it resets to Available.
 - **Print** — opens a print dialog showing only the formatted invoice (header, items, GST breakdown, payments)
@@ -122,6 +133,14 @@ Grid of all tables showing:
 
 Tap a table to go to the ordering screen.
 
+### Table Request Alerts
+When a customer taps "Call Waiter" or "Request Bill" on their ordering screen, a persistent alert banner appears at the top of the waiter portal. The banner shows:
+- Table name and request type
+- Time the request was made
+- "Mark Attended" button to dismiss
+
+Multiple pending requests are shown as a list. The alert stays visible across all waiter portal pages until resolved.
+
 ### Ordering screen (`/waiter/[tableId]`)
 
 **Menu tab:**
@@ -143,6 +162,15 @@ Tap a table to go to the ordering screen.
 
 **Invoice button (top right):** Create an invoice for the table at any time. Tapping opens the shared invoice editor (same as admin).
 
+### Waiter Invoices (`/waiter/invoices`)
+Waiters have their own invoice list page showing all invoices (Draft / Issued / Settled). Waiters can:
+- View and edit any Draft or Issued invoice
+- Create a blank invoice manually
+- Record payments, adjust items, and settle invoices
+- Print invoices
+
+Sidebar shows a badge count for open (non-settled) invoices.
+
 ### After placing an order
 - Confirmation screen shows items and total
 - "New Order" button to take another order for the same table
@@ -157,6 +185,10 @@ Customers scan the QR code at their table. This opens `/order/[tableId]`:
 2. Add items to cart
 3. Enter mobile number → receive OTP → verify
 4. Order is placed and appears in the admin dashboard
+
+After placing an order, customers see a confirmation screen with two additional buttons:
+- **Call Waiter** — sends an alert to the waiter and admin portals requesting waiter assistance
+- **Request Bill** — sends an alert indicating the table wants to pay
 
 > **Note:** During development, OTP code `000000` can be used to bypass verification.
 
@@ -189,6 +221,8 @@ Printed invoices include:
 | View table history | ✓ | ✓ (today only) |
 | Create / settle invoices | ✓ | ✓ |
 | Print invoices | ✓ | ✓ |
+| Attend table requests | ✓ | ✓ |
+| Receive table request alerts | ✓ | ✓ |
 
 ---
 

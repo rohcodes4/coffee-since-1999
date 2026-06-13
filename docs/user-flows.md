@@ -93,6 +93,58 @@
 2. Fills in: cafe name, tagline, address, phone, email, GSTIN
 3. Sets CGST % and SGST % (default 2.5% each)
 4. Sets invoice prefix (default "INV")
-5. Saves → all invoices will use these details
-6. Next invoice number is shown as preview (e.g. INV-0005)
+5. Sets dashboard mode: Kanban or Item view
+6. Saves → all invoices will use these details
+7. Next invoice number is shown as preview (e.g. INV-0005)
+```
+
+---
+
+## 7. Customer — Call Waiter / Request Bill
+
+```
+1. Customer is on /order/[tableId] (after placing an order)
+2. Sees "Call Waiter" and "Request Bill" buttons on the confirmation screen
+3. Taps a button → POST /api/table-requests with type CALL_WAITER or BILL_REQUEST
+4. A TableRequest is created (status: PENDING)
+5. Waiter and admin portals display a persistent alert banner for this table
+6. Waiter or admin taps "Mark Attended"
+   → PATCH /api/waiter/table-requests/[id]/attend or /api/admin/table-requests/[id]/attend
+7. Alert is dismissed; request recorded as ATTENDED with timestamp and attendee name
+```
+
+---
+
+## 8. Waiter — Handling Table Requests
+
+```
+1. Waiter is logged in and working on any screen
+2. A pending TableRequest banner appears at the top of the layout
+3. Banner shows: table name, request type (Call Waiter / Bill Request), time
+4. Waiter taps "Mark Attended" → request is resolved
+5. Multiple pending requests shown as a list in the banner
+```
+
+---
+
+## 9. Admin — Handling Table Requests
+
+```
+1. Admin sees pending table request banner in admin layout
+2. Also visible in /admin/dashboard as a dedicated "Table Requests" panel
+3. Admin reviews the request and taps "Mark Attended"
+4. Request resolved; attendedBy set to admin
+```
+
+---
+
+## 10. Waiter — Invoice Flow
+
+```
+1. Waiter taps "Invoice" button on the ordering screen or via /waiter/invoices
+2. Redirected to invoice editor (same UI as admin)
+3. Can review items, add products from menu, adjust quantities, add discount/notes
+4. Records payments (Cash / Card / UPI)
+5. Taps "Settle Invoice" to close the session
+6. Table resets to AVAILABLE (if no remaining uninvoiced items)
 ```
