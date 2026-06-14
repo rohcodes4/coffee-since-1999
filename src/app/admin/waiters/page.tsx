@@ -81,8 +81,8 @@ export default function WaitersPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-8 max-w-2xl">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
           <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>Waiters</h1>
           <p className="font-sans text-sm text-[#9A7A56] mt-1">Manage staff who can take orders on devices.</p>
@@ -142,8 +142,8 @@ export default function WaitersPage() {
       {drawer && (
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-black/40" onClick={() => setDrawer(null)} />
-          <div className="w-96 bg-white h-full shadow-2xl flex flex-col p-8">
-            <div className="flex items-center justify-between mb-8">
+          <div className="w-full max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 sm:p-8">
+            <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
               <h2 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.5rem" }}>
                 {drawer === "create" ? "New Waiter" : "Edit Waiter"}
               </h2>

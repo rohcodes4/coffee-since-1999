@@ -187,8 +187,8 @@ export default function MenuPage() {
   });
 
   return (
-    <div className="p-8 max-w-6xl">
-      <h1 className="font-display text-[#1A0B04] font-medium mb-8" style={{ fontSize: "2rem" }}>
+    <div className="p-4 sm:p-8 max-w-6xl">
+      <h1 className="font-display text-[#1A0B04] font-medium mb-6" style={{ fontSize: "1.6rem" }}>
         Menu Management
       </h1>
 
@@ -221,22 +221,22 @@ export default function MenuPage() {
         </div>
 
         {/* Add/edit category inline */}
-        <div className="flex gap-2 items-end">
-          <div>
+        <div className="flex flex-wrap gap-2 items-end">
+          <div className="flex-1 min-w-[140px]">
             <label className="block font-sans text-xs text-[#9A7A56] mb-1">Category Name</label>
             <input
               value={catForm.name}
               onChange={(e) => setCatForm((f) => ({ ...f, name: e.target.value, slug: editCat ? f.slug : e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") }))}
-              className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A] w-44"
+              className="w-full border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A]"
               placeholder="e.g. Cold Coffee"
             />
           </div>
-          <div>
+          <div className="flex-1 min-w-[120px]">
             <label className="block font-sans text-xs text-[#9A7A56] mb-1">Slug</label>
             <input
               value={catForm.slug}
               onChange={(e) => setCatForm((f) => ({ ...f, slug: e.target.value }))}
-              className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A] w-36"
+              className="w-full border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A]"
               placeholder="cold-coffee"
             />
           </div>
@@ -291,7 +291,8 @@ export default function MenuPage() {
             {filtered.length === 0 ? (
               <p className="text-center py-12 font-sans text-sm text-[#9A7A56]">No products found.</p>
             ) : (
-              <table className="w-full">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-[#EDE1C8] bg-[#F4ECD9]">
                     <th className="text-left px-4 py-3 font-sans text-xs text-[#9A7A56] uppercase tracking-widest">Item</th>
@@ -352,6 +353,7 @@ export default function MenuPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         )}

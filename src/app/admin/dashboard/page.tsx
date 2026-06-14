@@ -274,9 +274,9 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
-          <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>Live Orders</h1>
+          <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.8rem" }}>Live Orders</h1>
           <p className="font-sans text-sm text-[#9A7A56] mt-1">
             {lastUpdated.toLocaleTimeString()} · auto-refreshes every 30s
           </p>

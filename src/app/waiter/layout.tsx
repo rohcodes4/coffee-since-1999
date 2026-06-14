@@ -143,8 +143,10 @@ export default function WaiterLayout({ children }: { children: React.ReactNode }
           <button
             onClick={logout}
             className="flex items-center gap-1.5 text-white/60 hover:text-white transition-colors font-sans text-xs"
+            title="Sign out"
           >
-            <LogOut size={14} /> Sign out
+            <LogOut size={14} />
+            <span className="hidden sm:inline">Sign out</span>
           </button>
         </div>
       </header>
@@ -160,13 +162,13 @@ export default function WaiterLayout({ children }: { children: React.ReactNode }
                 req.type === "CALL_WAITER" ? "bg-red-600" : "bg-amber-600"
               )}
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 min-w-0">
                 {req.type === "CALL_WAITER"
                   ? <Bell size={15} className="shrink-0 animate-bounce" />
                   : <Receipt size={15} className="shrink-0" />}
-                <div>
+                <div className="min-w-0">
                   <span className="font-sans text-sm font-semibold">{req.tableName}</span>
-                  <span className="font-sans text-xs text-white/80 ml-2">
+                  <span className="font-sans text-xs text-white/80 ml-2 hidden sm:inline">
                     {req.type === "CALL_WAITER" ? "— calling for waiter" : "— requesting bill"}
                   </span>
                   <span className="font-sans text-[10px] text-white/60 ml-2">

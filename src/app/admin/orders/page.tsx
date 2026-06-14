@@ -69,12 +69,12 @@ export default function OrdersPage() {
   const total = filtered.reduce((s, o) => s + o.total, 0);
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>
+    <div className="p-4 sm:p-8 max-w-4xl">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.6rem" }}>
           Order History
         </h1>
-        <div className="font-display italic text-[#B86B1A]" style={{ fontSize: "1.5rem" }}>
+        <div className="font-display italic text-[#B86B1A]" style={{ fontSize: "1.3rem" }}>
           {formatPrice(total)} today
         </div>
       </div>
@@ -137,8 +137,8 @@ export default function OrdersPage() {
                       : <><Smartphone size={10} /> QR</>}
                   </span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-sans text-xs text-[#9A7A56]">
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="font-sans text-xs text-[#9A7A56] hidden sm:block">
                     {new Date(order.createdAt).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </span>
                   <span className="font-display italic text-[#B86B1A]" style={{ fontSize: "1rem" }}>

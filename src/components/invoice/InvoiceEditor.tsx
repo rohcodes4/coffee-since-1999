@@ -297,23 +297,21 @@ export function InvoiceEditor({
   return (
     <div className="min-h-screen bg-[#F4ECD9]">
       {/* Controls bar */}
-      <div className="print:hidden bg-white border-b border-[#CFC0A0] px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <a href={backUrl} className="flex items-center gap-2 font-sans text-sm text-[#5A3A1E] hover:text-[#1A0B04] transition-colors">
-            <ArrowLeft size={16} /> Back
-          </a>
-          {!settled && (
-            <button
-              onClick={deleteInvoice}
-              disabled={deleting}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-red-200 text-red-600 rounded-xl font-sans text-xs font-semibold hover:bg-red-50 transition-colors disabled:opacity-40"
-            >
-              {deleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-              {deleting ? "Deleting…" : "Delete"}
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
+      <div className="print:hidden bg-white border-b border-[#CFC0A0] px-4 sm:px-6 py-3 flex flex-wrap items-center gap-2 sticky top-0 z-20">
+        <a href={backUrl} className="flex items-center gap-2 font-sans text-sm text-[#5A3A1E] hover:text-[#1A0B04] transition-colors mr-1">
+          <ArrowLeft size={16} /> Back
+        </a>
+        {!settled && (
+          <button
+            onClick={deleteInvoice}
+            disabled={deleting}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-red-200 text-red-600 rounded-xl font-sans text-xs font-semibold hover:bg-red-50 transition-colors disabled:opacity-40"
+          >
+            {deleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
+        )}
+        <div className="ml-auto flex items-center gap-2 flex-wrap">
           {settled ? (
             <span className="flex items-center gap-1.5 font-sans text-sm text-green-600 font-semibold">
               <CheckCircle2 size={16} /> Settled
@@ -323,26 +321,26 @@ export function InvoiceEditor({
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex items-center gap-2 border border-[#CFC0A0] text-[#5A3A1E] px-4 py-2 rounded-xl font-sans text-sm font-semibold hover:bg-[#EDE1C8] transition-colors disabled:opacity-40"
+                className="flex items-center gap-1.5 border border-[#CFC0A0] text-[#5A3A1E] px-3 py-1.5 rounded-xl font-sans text-sm font-semibold hover:bg-[#EDE1C8] transition-colors disabled:opacity-40"
               >
-                <Save size={14} /> {saving ? "Saving…" : "Save Draft"}
+                <Save size={14} /> {saving ? "Saving…" : "Save"}
               </button>
               {balance <= 0 && payments.length > 0 && (
                 <button
                   onClick={settle}
                   disabled={settling}
-                  className="bg-green-600 text-white px-4 py-2 rounded-xl font-sans text-sm font-semibold hover:bg-green-700 transition-colors disabled:opacity-40"
+                  className="bg-green-600 text-white px-3 py-1.5 rounded-xl font-sans text-sm font-semibold hover:bg-green-700 transition-colors disabled:opacity-40"
                 >
-                  {settling ? "Settling…" : "Settle Invoice"}
+                  {settling ? "Settling…" : "Settle"}
                 </button>
               )}
             </>
           )}
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 bg-[#1A0B04] text-white px-4 py-2 rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors"
+            className="flex items-center gap-1.5 bg-[#1A0B04] text-white px-3 py-1.5 rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors"
           >
-            <Printer size={16} /> Print
+            <Printer size={14} /> Print
           </button>
         </div>
       </div>
@@ -353,16 +351,16 @@ export function InvoiceEditor({
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* ── Invoice document ── */}
         <div
           className="lg:col-span-2 bg-white rounded-2xl border border-[#CFC0A0] shadow-sm print:shadow-none print:border-none print:rounded-none"
           id="invoice-doc"
         >
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             {/* Header */}
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex justify-between items-start mb-6 gap-4">
               <div>
                 <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.8rem" }}>{settings.cafeName}</h1>
                 {settings.tagline && <p className="font-sans text-xs italic text-[#9A7A56] mt-0.5">{settings.tagline}</p>}

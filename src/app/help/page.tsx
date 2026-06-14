@@ -173,7 +173,8 @@ export default function HelpPage() {
 
           <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">Settings Reference</h3>
           <div className="bg-white rounded-2xl border border-[#CFC0A0] overflow-hidden mb-4">
-            <table className="w-full font-sans text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full font-sans text-sm min-w-[400px]">
               <thead>
                 <tr className="bg-[#FAF6EE] border-b border-[#EDE1C8] text-[#9A7A56] text-xs uppercase tracking-widest">
                   <th className="text-left px-4 py-3 font-semibold">Field</th>
@@ -199,6 +200,7 @@ export default function HelpPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </Section>
 
@@ -389,7 +391,8 @@ export default function HelpPage() {
 
           <h3 className="font-sans font-semibold text-[#1A0B04] mb-3">Roles & Permissions</h3>
           <div className="bg-white rounded-2xl border border-[#CFC0A0] overflow-hidden">
-            <table className="w-full font-sans text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full font-sans text-sm min-w-[360px]">
               <thead>
                 <tr className="bg-[#FAF6EE] border-b border-[#EDE1C8] text-[#9A7A56] text-xs uppercase tracking-widest">
                   <th className="text-left px-4 py-3 font-semibold">Feature</th>
@@ -418,6 +421,7 @@ export default function HelpPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </Section>
 

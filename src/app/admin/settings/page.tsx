@@ -65,9 +65,9 @@ export default function SettingsPage() {
   if (loading) return <div className="p-8"><p className="font-sans text-sm text-[#9A7A56]">Loading…</p></div>;
 
   return (
-    <div className="p-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>Cafe Settings</h1>
+    <div className="p-4 sm:p-8 max-w-2xl">
+      <div className="mb-6">
+        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.6rem" }}>Cafe Settings</h1>
         <p className="font-sans text-sm text-[#9A7A56] mt-1">Details that appear on invoices and receipts.</p>
       </div>
 
@@ -79,7 +79,7 @@ export default function SettingsPage() {
           <Field label="Cafe Name" value={form.cafeName} onChange={(v) => set("cafeName", v)} required />
           <Field label="Tagline" value={form.tagline} onChange={(v) => set("tagline", v)} placeholder="e.g. Brewing memories since 1999" />
           <Field label="Address" value={form.address} onChange={(v) => set("address", v)} multiline placeholder="Full address including area, city, pincode" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Phone" value={form.phone} onChange={(v) => set("phone", v)} placeholder="+91 98765 43210" />
             <Field label="Email" value={form.email} onChange={(v) => set("email", v)} placeholder="hello@cafe.in" />
           </div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
         <section className="bg-white rounded-2xl border border-[#CFC0A0] p-6 space-y-4">
           <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-[#9A7A56]">GST / Tax</h2>
           <Field label="GSTIN" value={form.gstNumber} onChange={(v) => set("gstNumber", v)} placeholder="22AAAAA0000A1Z5" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <NumberField label="CGST %" value={form.cgstRate} onChange={(v) => set("cgstRate", v)} step={0.5} />
             <NumberField label="SGST %" value={form.sgstRate} onChange={(v) => set("sgstRate", v)} step={0.5} />
           </div>
@@ -122,7 +122,7 @@ export default function SettingsPage() {
         {/* Invoice */}
         <section className="bg-white rounded-2xl border border-[#CFC0A0] p-6 space-y-4">
           <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-[#9A7A56]">Invoice</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Invoice Prefix" value={form.invoicePrefix} onChange={(v) => set("invoicePrefix", v)} placeholder="INV" />
             <div>
               <label className="font-sans text-xs font-semibold text-[#5A3A1E] uppercase tracking-wider">Next Invoice #</label>

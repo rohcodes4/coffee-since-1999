@@ -97,16 +97,16 @@ export default function TablesPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>
+    <div className="p-4 sm:p-8 max-w-4xl">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.6rem" }}>
           Tables & QR Codes
         </h1>
         <button
           onClick={bulkAddTables}
           className="flex items-center gap-2 px-4 py-2 border border-[#CFC0A0] rounded-xl font-sans text-sm text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors"
         >
-          <Plus size={14} /> Bulk Add Tables
+          <Plus size={14} /> Bulk Add
         </button>
       </div>
 
@@ -134,7 +134,7 @@ export default function TablesPage() {
             <input
               value={form.label}
               onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
-              className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-[#F4ECD9] focus:outline-none focus:border-[#B86B1A] w-44"
+              className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-[#F4ECD9] focus:outline-none focus:border-[#B86B1A] w-full sm:w-44"
               placeholder="Table 1 / Patio A"
             />
           </div>

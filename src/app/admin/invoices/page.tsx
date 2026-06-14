@@ -94,9 +94,9 @@ export default function InvoicesPage() {
   }
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "2rem" }}>
+    <div className="p-4 sm:p-8 max-w-5xl">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+        <h1 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.6rem" }}>
           Invoices
         </h1>
         <Link
@@ -147,7 +147,8 @@ export default function InvoicesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-[#CFC0A0] overflow-hidden">
-          <table className="w-full font-sans text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full font-sans text-sm min-w-[600px]">
             <thead>
               <tr className="border-b border-[#EDE1C8] text-[#9A7A56] text-xs uppercase tracking-widest">
                 <th className="px-4 py-3 w-10">
@@ -230,6 +231,7 @@ export default function InvoicesPage() {
               ))}
             </tbody>
           </table>
+          </div>
 
           {someSelected && (
             <div className="px-5 py-3 border-t border-[#EDE1C8] bg-red-50 flex items-center justify-between">
