@@ -1,8 +1,10 @@
 import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { getAdminTokenFromCookies } from "@/lib/auth";
-import { getWaiterFromCookies } from "@/lib/waiter-auth";
+import { InvoiceCreationPreview } from "@/components/invoice/InvoiceCreationPreview";
+import type { PreviewItem, PreviewSettings } from "@/components/invoice/InvoiceCreationPreview";
 
+// This page is a READ-ONLY data loader. It does NOT create an invoice or
+// increment the counter. That happens only when the user clicks "Create Invoice"
+// in the preview component, which POSTs to /api/admin/invoices.
 export default async function NewInvoicePage({
   searchParams,
 }: {
@@ -16,66 +18,55 @@ export default async function NewInvoicePage({
     update: {},
   });
 
-  const updated = await db.cafeSettings.update({
-    where: { id: "singleton" },
-    data: { invoiceCounter: { increment: 1 } },
-  });
-  const invoiceNumber = `${settings.invoicePrefix}-${String(updated.invoiceCounter).padStart(4, "0")}`;
+  const previewSettings: PreviewSettings = {
+    invoicePrefix: settings.invoicePrefix,
+    invoiceCounter: settings.invoiceCounter, // preview shows counter + 1
+    cgstRate: settings.cgstRate,
+    sgstRate: settings.sgstRate,
+  };
 
   let tableName = "";
-  let sessionStart: Date | null = null;
-  let uninvoicedOrderItems: {
-    id: string; name: string; quantity: number; price: number; createdAt: Date;
-  }[] = [];
+  let sessionStart: string | null = null;
+  let items: PreviewItem[] = [];
 
   if (tableId) {
     const table = await db.table.findUnique({ where: { id: tableId } });
     if (table) {
       tableName = table.label;
-      sessionStart = table.sessionStartedAt;
+      sessionStart = table.sessionStartedAt?.toISOString() ?? null;
 
-      // Fetch uninvoiced order items for this table
+      // Load uninvoiced order items for preview. No writes.
       const orders = await db.order.findMany({
         where: { tableId, status: { notIn: ["CANCELLED"] } },
-        include: { items: { where: { invoicedAt: null, invoiceItem: { is: null } } } },
+        include: {
+          items: { where: { invoicedAt: null, invoiceItem: { is: null } } },
+        },
         orderBy: { createdAt: "asc" },
       });
-      uninvoicedOrderItems = orders.flatMap((o) =>
+
+      items = orders.flatMap((o) =>
         o.items.map((item) => ({
           id: item.id,
           name: item.name,
           quantity: item.quantity,
           price: item.price,
-          createdAt: item.createdAt,
+          createdAt: item.createdAt.toISOString(),
         }))
       );
     }
   }
 
-  // Get waiter identity if applicable
-  const waiterInfo = await getWaiterFromCookies();
+  const backUrl = tableId ? "/admin/tables" : "/admin/invoices";
 
-  // Create the invoice in DB
-  const invoice = await db.invoice.create({
-    data: {
-      invoiceNumber,
-      tableId: tableId ?? null,
-      tableName,
-      status: "DRAFT",
-      waiterId: waiterInfo?.waiterId ?? null,
-      waiterName: waiterInfo?.waiterName ?? null,
-      sessionStart,
-      sessionEnd: new Date(),
-      items: {
-        create: uninvoicedOrderItems.map((oi) => ({
-          name: oi.name,
-          quantity: oi.quantity,
-          price: oi.price,
-          orderItemId: oi.id,
-        })),
-      },
-    },
-  });
-
-  redirect(`/admin/invoices/${invoice.id}`);
+  return (
+    <InvoiceCreationPreview
+      tableId={tableId}
+      tableName={tableName}
+      sessionStart={sessionStart}
+      items={items}
+      settings={previewSettings}
+      backUrl={backUrl}
+      successRedirectBase="/admin/invoices/"
+    />
+  );
 }
