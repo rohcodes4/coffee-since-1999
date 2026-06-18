@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getStaffContext } from "@/lib/auth";
 import { z } from "zod";
 
 const schema = z.object({
@@ -12,6 +13,10 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string; paymentId: string }> }
 ) {
+  // Both admin and waiter can correct payment entries; unauthenticated callers cannot.
+  const staff = await getStaffContext();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { paymentId } = await params;
   const body = await req.json();
   const parsed = schema.safeParse(body);
@@ -29,9 +34,13 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string; paymentId: string }> }
 ) {
+  // Both admin and waiter can remove a mistakenly entered payment.
+  const staff = await getStaffContext();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { paymentId } = await params;
   await db.tablePayment.delete({ where: { id: paymentId } });
   return NextResponse.json({ ok: true });

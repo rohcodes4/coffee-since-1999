@@ -72,3 +72,25 @@ export { ADMIN_COOKIE, OTP_COOKIE };
 export async function hashPassword(plain: string): Promise<string> {
   return bcrypt.hash(plain, 12);
 }
+
+// ── Shared staff context (used by invoice/payment API routes) ─
+// Returns the authenticated caller's role, or null if unauthenticated.
+// Accepts both admin JWT and waiter JWT so a single route can serve both.
+import { verifyWaiterToken, getWaiterTokenFromCookies } from "@/lib/waiter-auth";
+
+export async function getStaffContext(): Promise<
+  | { role: "admin"; waiterName: null; waiterId: null }
+  | { role: "waiter"; waiterName: string; waiterId: string }
+  | null
+> {
+  const adminToken = await getAdminTokenFromCookies();
+  if (adminToken && verifyAdminToken(adminToken)) {
+    return { role: "admin", waiterName: null, waiterId: null };
+  }
+  const waiterToken = await getWaiterTokenFromCookies();
+  if (waiterToken) {
+    const w = verifyWaiterToken(waiterToken);
+    if (w) return { role: "waiter", waiterName: w.waiterName, waiterId: w.waiterId };
+  }
+  return null;
+}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getStaffContext } from "@/lib/auth";
 import { z } from "zod";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +34,10 @@ const updateSchema = z.object({
 });
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  // Both admin and waiter can save invoice edits (items, notes, discount, waiter assignment).
+  const staff = await getStaffContext();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { id } = await params;
   const body = await req.json();
   const parsed = updateSchema.safeParse(body);
@@ -68,7 +73,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   return NextResponse.json(invoice);
 }
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  // Deleting an invoice is an admin-only action — waiters must not be able to destroy records.
+  const staff = await getStaffContext();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (staff.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
   const { id } = await params;
   await db.invoice.delete({ where: { id } });
   return NextResponse.json({ ok: true });

@@ -301,7 +301,8 @@ export function InvoiceEditor({
         <a href={backUrl} className="flex items-center gap-2 font-sans text-sm text-[#5A3A1E] hover:text-[#1A0B04] transition-colors mr-1">
           <ArrowLeft size={16} /> Back
         </a>
-        {!settled && (
+        {/* Invoice deletion is admin-only — waiters must not be able to destroy records */}
+        {!settled && role === "admin" && (
           <button
             onClick={deleteInvoice}
             disabled={deleting}

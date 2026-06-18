@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getStaffContext } from "@/lib/auth";
 import { z } from "zod";
 
 const schema = z.object({
@@ -9,6 +10,10 @@ const schema = z.object({
 });
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  // Both admin and waiter can record payments; unauthenticated callers cannot.
+  const staff = await getStaffContext();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { id } = await params;
   const body = await req.json();
   const parsed = schema.safeParse(body);
