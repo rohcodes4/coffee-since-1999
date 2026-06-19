@@ -76,10 +76,11 @@ export function AmbientGallery() {
             <motion.div
               key={i}
               className="break-inside-avoid mb-3 rounded-xl overflow-hidden group cursor-pointer"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.07 }}
+              whileHover={{ scale: 1.02 }}
             >
               <div
                 className="relative overflow-hidden"
@@ -93,22 +94,29 @@ export function AmbientGallery() {
                   src={img.src}
                   alt={img.alt}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 640px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/20 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                  <span className="font-sans text-[10px] text-paper leading-tight">{img.alt}</span>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Desktop: explicit 4-col grid — 4 items in top row, 4 items in bottom row */}
-        <div
+        {/* Desktop: explicit 4-col grid */}
+        <motion.div
           className="hidden lg:grid gap-3"
           style={{
             gridTemplateColumns: "repeat(4, 1fr)",
             gridTemplateRows: "260px 200px 220px",
           }}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
         >
           {desktopGrid.map(({ imgIdx, col, row }, i) => {
             const img = cafe.gallery[imgIdx];
@@ -117,28 +125,33 @@ export function AmbientGallery() {
                 key={imgIdx}
                 className="relative rounded-xl overflow-hidden group cursor-pointer"
                 style={{ gridColumn: col, gridRow: row }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                whileHover={{ scale: 1.01 }}
+                variants={{
+                  hidden: { opacity: 0, y: 20, scale: 0.97 },
+                  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" as const } },
+                }}
+                whileHover={{ scale: 1.02, zIndex: 1 }}
+                transition={{ duration: 0.3 }}
               >
                 <Image
                   src={img.src}
                   alt={img.alt}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="25vw"
                 />
-                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors duration-300 flex items-end p-3">
-                  <span className="font-sans text-xs text-paper opacity-0 group-hover:opacity-100 transition-opacity duration-300 leading-tight">
+                {/* Always visible subtle vignette */}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent opacity-60" />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/25 transition-colors duration-400" />
+                <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+                  <span className="font-sans text-xs text-paper leading-tight font-medium">
                     {img.alt}
                   </span>
                 </div>
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Bottom quote */}
         <motion.blockquote
@@ -155,7 +168,7 @@ export function AmbientGallery() {
             &ldquo;Coffee lovers should definitely check this place. The coffee is legit and great.&rdquo;
           </span>
           <cite className="font-sans text-xs text-ink-3 not-italic mt-3 block tracking-wider uppercase">
-            Google Review
+            — Google Review
           </cite>
         </motion.blockquote>
       </div>

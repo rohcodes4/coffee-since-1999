@@ -137,7 +137,7 @@ export function VisitUs() {
             transition={{ duration: 0.65, delay: 0.1 }}
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.628348948752!2d80.25397647454928!3d13.066755187258124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5267f9399f2b31%3A0x68fb3dfcabc91c1b!2sCoffee%3F%20Since%201999!5e0!3m2!1sen!2sin!4v1718000000000!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3886.6!2d80.2498977!3d13.0630188!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526738670597c9%3A0xce94f077cb4482!2sCoffee%3F%20Since%201999!5e0!3m2!1sen!2sin!4v1781536000000!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: "380px" }}

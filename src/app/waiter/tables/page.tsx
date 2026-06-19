@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, RefreshCw, Clock, Plus } from "lucide-react";
+import { PageLoader, Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 
 type TableStatus = "AVAILABLE" | "OCCUPIED";
@@ -79,7 +80,7 @@ export default function WaiterTablesPage() {
           <p className="font-sans text-xs text-[#9A7A56] mt-0.5">
             {lastUpdated
               ? `${lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · auto-refreshes`
-              : "Loading…"}
+              : <Spinner className="w-3 h-3 inline-block" />}
           </p>
         </div>
         <button
@@ -91,7 +92,7 @@ export default function WaiterTablesPage() {
       </div>
 
       {loading ? (
-        <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+        <PageLoader />
       ) : (
         <>
           {/* Occupied tables */}
@@ -161,28 +162,28 @@ function TableCard({ table, onOrder }: { table: TableInfo; onOrder: () => void }
           <p className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.1rem" }}>{table.label}</p>
           <p className="font-sans text-xs text-[#9A7A56]">#{table.number}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           {table.activeInvoice && (
             <button
               onClick={() => router.push(`/waiter/invoices/${table.activeInvoice!.id}`)}
-              className="flex items-center gap-1 px-3 py-1.5 bg-[#B86B1A] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#9A5912] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#B86B1A] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#9A5912] transition-colors min-h-[36px]"
             >
-              <FileText size={11} /> {table.activeInvoice.invoiceNumber}
+              <FileText size={12} /> <span className="hidden xs:inline">{table.activeInvoice.invoiceNumber}</span><span className="xs:hidden">Bill</span>
             </button>
           )}
           {table.uninvoicedFreeCount > 0 && (
             <button
               onClick={() => router.push(`/waiter/invoices/new?tableId=${table.id}`)}
-              className="flex items-center gap-1 px-3 py-1.5 border border-[#CFC0A0] text-[#5A3A1E] rounded-xl font-sans text-xs font-semibold hover:bg-[#EDE1C8] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 border border-[#CFC0A0] text-[#5A3A1E] rounded-xl font-sans text-xs font-semibold hover:bg-[#EDE1C8] transition-colors min-h-[36px]"
             >
-              <FileText size={11} /> {table.activeInvoice ? `Bill Remaining (${table.uninvoicedFreeCount})` : "Request Bill"}
+              <FileText size={12} /> <span className="hidden sm:inline">{table.activeInvoice ? `+${table.uninvoicedFreeCount}` : "New Bill"}</span><span className="sm:hidden">+Bill</span>
             </button>
           )}
           <button
             onClick={onOrder}
-            className="flex items-center gap-1 px-3 py-1.5 bg-[#1A0B04] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#B86B1A] transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#1A0B04] text-white rounded-xl font-sans text-xs font-semibold hover:bg-[#B86B1A] transition-colors min-h-[36px]"
           >
-            <Plus size={11} /> Order
+            <Plus size={12} /> Order
           </button>
         </div>
       </div>

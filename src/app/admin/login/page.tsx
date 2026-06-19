@@ -22,7 +22,6 @@ export default function AdminLogin() {
       credentials: "include"
     });
     setLoading(false);
-    console.log('resss', res.ok)
     if (res.ok) {
       router.push("/admin/dashboard");
     } else {

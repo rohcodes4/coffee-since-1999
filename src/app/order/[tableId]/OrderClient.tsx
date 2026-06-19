@@ -315,7 +315,7 @@ export function OrderClient({
       </div>
 
       {/* Products */}
-      <div className="px-4 py-5 pb-32">
+      <div className="px-4 py-5 pb-40">
         {filtered.length === 0 ? (
           <p className="text-center font-sans text-sm text-[#9A7A56] py-12">No items found.</p>
         ) : (
@@ -359,18 +359,18 @@ export function OrderClient({
                       {qty === 0 ? (
                         <button
                           onClick={() => addToCart(product)}
-                          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#1A0B04] text-white rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors"
+                          className="flex items-center gap-1.5 px-5 py-2.5 bg-[#1A0B04] text-white rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors active:scale-95"
                         >
-                          <Plus size={13} /> Add
+                          <Plus size={14} /> Add
                         </button>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <button onClick={() => removeFromCart(product.id)} className="w-8 h-8 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors">
-                            <Minus size={13} />
+                          <button onClick={() => removeFromCart(product.id)} className="w-11 h-11 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors active:scale-95">
+                            <Minus size={15} />
                           </button>
-                          <span className="font-sans font-semibold text-sm text-[#1A0B04] w-4 text-center">{qty}</span>
-                          <button onClick={() => addToCart(product)} className="w-8 h-8 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A] transition-colors">
-                            <Plus size={13} />
+                          <span className="font-sans font-semibold text-base text-[#1A0B04] w-6 text-center">{qty}</span>
+                          <button onClick={() => addToCart(product)} className="w-11 h-11 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A] transition-colors active:scale-95">
+                            <Plus size={15} />
                           </button>
                         </div>
                       )}
@@ -385,44 +385,44 @@ export function OrderClient({
 
       {/* Bottom CTA — sits above the action bar */}
       {cartCount > 0 && (
-        <div className="fixed bottom-[52px] left-0 right-0 p-3 bg-[#F4ECD9] border-t border-[#CFC0A0]">
+        <div className="fixed bottom-[64px] left-0 right-0 p-3 bg-[#F4ECD9]/95 backdrop-blur-sm border-t border-[#CFC0A0]">
           <button
             onClick={() => setCartOpen(true)}
-            className="w-full flex items-center justify-between bg-[#1A0B04] text-white px-6 py-3.5 rounded-2xl font-sans font-semibold hover:bg-[#B86B1A] transition-colors"
+            className="w-full flex items-center justify-between bg-[#1A0B04] text-white px-6 py-4 rounded-2xl font-sans font-semibold hover:bg-[#B86B1A] transition-colors active:scale-[0.99]"
           >
-            <span>{cartCount} item{cartCount > 1 ? "s" : ""}</span>
-            <span className="flex items-center gap-2">View Cart <ChevronRight size={16} /></span>
-            <span>{formatPrice(cartTotal)}</span>
+            <span className="text-sm">{cartCount} item{cartCount > 1 ? "s" : ""}</span>
+            <span className="flex items-center gap-2 text-sm">View Cart <ChevronRight size={16} /></span>
+            <span className="text-sm">{formatPrice(cartTotal)}</span>
           </button>
         </div>
       )}
 
       {/* Persistent customer action bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#1A0B04] flex gap-2 px-3 py-2">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#1A0B04] flex gap-2 px-3 py-2.5">
         <button
           onClick={callWaiter}
           disabled={callStatus === "loading"}
           className={cn(
-            "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-sans text-xs font-semibold transition-colors",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-sans text-xs font-semibold transition-colors min-h-[44px]",
             callStatus === "sent"
               ? "bg-amber-400 text-[#1A0B04] cursor-default"
-              : "bg-white/10 text-white hover:bg-white/20"
+              : "bg-white/10 text-white hover:bg-white/20 active:bg-white/30"
           )}
         >
-          {callStatus === "loading" ? <Loader2 size={13} className="animate-spin" /> : <Bell size={13} />}
+          {callStatus === "loading" ? <Loader2 size={14} className="animate-spin" /> : <Bell size={14} />}
           {callStatus === "sent" ? "Waiter on the way" : "Call Waiter"}
         </button>
         <button
           onClick={requestBill}
           disabled={billStatus === "loading"}
           className={cn(
-            "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-sans text-xs font-semibold transition-colors",
+            "flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-sans text-xs font-semibold transition-colors min-h-[44px]",
             billStatus === "sent"
               ? "bg-green-400 text-[#1A0B04] cursor-default"
-              : "bg-white/10 text-white hover:bg-white/20"
+              : "bg-white/10 text-white hover:bg-white/20 active:bg-white/30"
           )}
         >
-          {billStatus === "loading" ? <Loader2 size={13} className="animate-spin" /> : <Receipt size={13} />}
+          {billStatus === "loading" ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
           {billStatus === "sent" ? "Bill requested" : "Request Bill"}
         </button>
       </div>
@@ -442,14 +442,14 @@ export function OrderClient({
                 <div className="px-6 py-4 space-y-3">
                   {cart.map((item) => (
                     <div key={item.product.id} className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="font-sans text-sm font-medium text-[#1A0B04]">{item.product.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-sans text-sm font-medium text-[#1A0B04] truncate">{item.product.name}</p>
                         <p className="font-sans text-xs text-[#9A7A56]">{formatPrice(item.product.price)} each</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <button onClick={() => removeFromCart(item.product.id)} className="w-7 h-7 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E]"><Minus size={11} /></button>
+                        <button onClick={() => removeFromCart(item.product.id)} className="w-10 h-10 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] active:scale-95 transition-all"><Minus size={13} /></button>
                         <span className="font-sans font-semibold text-sm text-[#1A0B04] w-5 text-center">{item.qty}</span>
-                        <button onClick={() => addToCart(item.product)} className="w-7 h-7 rounded-full bg-[#1A0B04] flex items-center justify-center text-white"><Plus size={11} /></button>
+                        <button onClick={() => addToCart(item.product)} className="w-10 h-10 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A] active:scale-95 transition-all"><Plus size={13} /></button>
                       </div>
                       <span className="font-display italic text-[#B86B1A] shrink-0" style={{ fontSize: "0.95rem" }}>
                         {formatPrice(item.product.price * item.qty)}

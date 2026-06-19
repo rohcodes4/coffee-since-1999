@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, FileText, ExternalLink, Trash2 } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -139,7 +140,7 @@ export default function InvoicesPage() {
       </div>
 
       {loading ? (
-        <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+        <PageLoader />
       ) : invoices.length === 0 ? (
         <div className="text-center py-16">
           <FileText size={40} className="mx-auto text-[#CFC0A0] mb-3" />

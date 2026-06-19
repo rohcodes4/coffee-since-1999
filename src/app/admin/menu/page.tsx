@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { formatPrice } from "@/lib/format";
 import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, X, Loader2, Check, Leaf, Drumstick } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -285,7 +286,7 @@ export default function MenuPage() {
         </div>
 
         {loading ? (
-          <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+          <PageLoader />
         ) : (
           <div className="bg-white rounded-2xl border border-[#CFC0A0] overflow-hidden">
             {filtered.length === 0 ? (
@@ -363,7 +364,7 @@ export default function MenuPage() {
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-black/40" onClick={() => setDrawerOpen(false)} />
-          <div className="w-full max-w-md bg-white shadow-2xl overflow-y-auto flex flex-col">
+          <div className="w-full sm:max-w-md bg-white shadow-2xl overflow-y-auto flex flex-col">
             <div className="px-6 py-5 border-b border-[#EDE1C8] flex items-center justify-between">
               <h2 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.4rem" }}>
                 {drawerMode === "create" ? "New Product" : "Edit Product"}

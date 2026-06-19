@@ -257,7 +257,7 @@ export default function DashboardPage() {
   const statusOrder: OrderStatus[] = ["PENDING", "CONFIRMED", "PREPARING", "READY"];
 
   return (
-    <div className="p-6 lg:p-8" onClick={() => {
+    <div className="p-4 sm:p-6 lg:p-8" onClick={() => {
       if (!audioReady.current && typeof AudioContext !== "undefined") {
         audioCtxRef.current = new AudioContext();
         audioReady.current = true;
@@ -559,7 +559,7 @@ function OrderCard({
               {ITEM_STATUS_CONFIG[item.status].next && (
                 <button
                   onClick={() => onItemStatus(item.id, ITEM_STATUS_CONFIG[item.status].next!)}
-                  className="text-[10px] font-sans font-semibold text-[#B86B1A] hover:underline"
+                  className="text-[10px] font-sans font-semibold text-[#B86B1A] px-2 py-1 rounded-lg hover:bg-[#B86B1A]/10 transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center"
                 >
                   ↑
                 </button>

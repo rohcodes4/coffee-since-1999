@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, X } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 
 interface Waiter {
@@ -96,7 +97,7 @@ export default function WaitersPage() {
       </div>
 
       {loading ? (
-        <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+        <PageLoader />
       ) : waiters.length === 0 ? (
         <p className="font-sans text-sm text-[#9A7A56] text-center py-16">No waiters yet. Add one to get started.</p>
       ) : (
@@ -142,7 +143,7 @@ export default function WaitersPage() {
       {drawer && (
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-black/40" onClick={() => setDrawer(null)} />
-          <div className="w-full max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 sm:p-8">
+          <div className="w-full sm:max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 sm:p-8">
             <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
               <h2 className="font-display text-[#1A0B04] font-medium" style={{ fontSize: "1.5rem" }}>
                 {drawer === "create" ? "New Waiter" : "Edit Waiter"}

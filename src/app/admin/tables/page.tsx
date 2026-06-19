@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Plus, QrCode, Download, Trash2, Loader2, X, Pencil, FileText } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 import { useRouter } from "next/navigation";
 import { generateQrDataUrl } from "@/lib/qr";
 import { cn } from "@/lib/utils";
@@ -154,7 +155,7 @@ export default function TablesPage() {
 
       {/* Tables list */}
       {loading ? (
-        <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+        <PageLoader />
       ) : tables.length === 0 ? (
         <p className="font-sans text-sm text-[#9A7A56] text-center py-12">No tables yet. Add one above or use Bulk Add.</p>
       ) : (
@@ -186,29 +187,29 @@ export default function TablesPage() {
                   <button
                     onClick={() => router.push(`/admin/invoices/new?tableId=${table.id}`)}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-xs font-semibold transition-colors",
+                      "flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-xs font-semibold transition-colors min-h-[36px]",
                       table.status === "OCCUPIED"
                         ? "bg-[#B86B1A] text-white hover:bg-[#9A5912]"
                         : "border border-[#CFC0A0] text-[#5A3A1E] hover:bg-[#EDE1C8]"
                     )}
                   >
-                    <FileText size={12} /> Invoice
+                    <FileText size={12} /> <span className="hidden sm:inline">Invoice</span>
                   </button>
                   <button
                     onClick={() => showQr(table)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#CFC0A0] font-sans text-xs text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#CFC0A0] font-sans text-xs text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors min-h-[36px]"
                   >
                     {loadingQr === table.id ? <Loader2 size={12} className="animate-spin" /> : <QrCode size={12} />}
-                    {qrPreviews[table.id] ? "Hide QR" : "Show QR"}
+                    <span className="hidden sm:inline">{qrPreviews[table.id] ? "Hide QR" : "QR"}</span>
                   </button>
                   <button
                     onClick={() => downloadQr(table)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#CFC0A0] font-sans text-xs text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#CFC0A0] font-sans text-xs text-[#5A3A1E] hover:bg-[#EDE1C8] transition-colors min-h-[36px]"
                   >
-                    <Download size={12} /> Download
+                    <Download size={12} /> <span className="hidden md:inline">Download</span>
                   </button>
-                  <button onClick={() => { setEditTable(table); setForm({ number: String(table.number), label: table.label }); }} className="p-2 rounded-xl text-[#9A7A56] hover:text-[#B86B1A] hover:bg-[#EDE1C8] transition-colors"><Pencil size={14} /></button>
-                  <button onClick={() => deleteTable(table.id)} className="p-2 rounded-xl text-[#9A7A56] hover:text-red-500 hover:bg-red-50 transition-colors"><Trash2 size={14} /></button>
+                  <button onClick={() => { setEditTable(table); setForm({ number: String(table.number), label: table.label }); }} className="p-2 rounded-xl text-[#9A7A56] hover:text-[#B86B1A] hover:bg-[#EDE1C8] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"><Pencil size={14} /></button>
+                  <button onClick={() => deleteTable(table.id)} className="p-2 rounded-xl text-[#9A7A56] hover:text-red-500 hover:bg-red-50 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"><Trash2 size={14} /></button>
                 </div>
               </div>
               {qrPreviews[table.id] && (

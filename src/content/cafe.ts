@@ -44,7 +44,7 @@ export const cafe: CafeInfo = {
   },
   zomato: "https://www.zomato.com/chennai/coffee-since-1999-2-thousand-lights/order",
   swiggy:  "https://www.swiggy.com/city/chennai/coffee-since-1999-thousand-lights-rest368887",
-  mapsUrl: "https://maps.app.goo.gl/9cAn6RbpJD6o3kSAA",
+  mapsUrl: "https://maps.app.goo.gl/TBgmdUZPo8HJe7YZA",
   rating: "4.4",
   reviewCount: "1500+",
 

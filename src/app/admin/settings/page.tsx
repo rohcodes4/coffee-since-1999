@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 
 interface CafeSettings {
   cafeName: string;
@@ -62,7 +63,7 @@ export default function SettingsPage() {
     setSaving(false);
   }
 
-  if (loading) return <div className="p-8"><p className="font-sans text-sm text-[#9A7A56]">Loading…</p></div>;
+  if (loading) return <div className="p-8"><PageLoader /></div>;
 
   return (
     <div className="p-4 sm:p-8 max-w-2xl">

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Smartphone, UtensilsCrossed } from "lucide-react";
+import { PageLoader } from "@/components/ui/Spinner";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "DONE" | "CANCELLED";
 type OrderSource = "CUSTOMER" | "WAITER";
@@ -80,17 +81,17 @@ export default function OrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-6 flex-wrap">
+      <div className="grid grid-cols-2 sm:flex gap-3 mb-6 flex-wrap">
         <input
           type="date"
           value={filterDate}
           onChange={(e) => setFilterDate(e.target.value)}
-          className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A]"
+          className="col-span-2 sm:col-auto border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A] w-full sm:w-auto"
         />
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A]"
+          className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A] w-full sm:w-auto"
         >
           <option value="all">All Statuses</option>
           {(["PENDING","CONFIRMED","PREPARING","READY","DONE","CANCELLED"] as OrderStatus[]).map((s) => (
@@ -100,17 +101,17 @@ export default function OrdersPage() {
         <select
           value={filterSource}
           onChange={(e) => setFilterSource(e.target.value)}
-          className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A]"
+          className="border border-[#CFC0A0] rounded-xl px-3 py-2 font-sans text-sm text-[#1A0B04] bg-white focus:outline-none focus:border-[#B86B1A] w-full sm:w-auto"
         >
           <option value="all">All Sources</option>
           <option value="CUSTOMER">QR / Customer</option>
           <option value="WAITER">Waiter</option>
         </select>
-        <span className="font-sans text-sm text-[#9A7A56] self-center">{filtered.length} orders</span>
+        <span className="font-sans text-sm text-[#9A7A56] self-center hidden sm:block">{filtered.length} orders</span>
       </div>
 
       {loading ? (
-        <p className="font-sans text-sm text-[#9A7A56]">Loading…</p>
+        <PageLoader />
       ) : filtered.length === 0 ? (
         <p className="font-sans text-sm text-[#9A7A56] text-center py-12">No orders found.</p>
       ) : (

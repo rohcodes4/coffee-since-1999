@@ -447,9 +447,9 @@ export function InvoiceEditor({
                     <div className="col-span-2 flex items-center justify-center gap-1 print:block print:text-center">
                       {!settled ? (
                         <>
-                          <button onClick={() => updateQty(item.tempId, -1)} className="print:hidden w-5 h-5 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none">−</button>
+                          <button onClick={() => updateQty(item.tempId, -1)} className="print:hidden w-7 h-7 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none transition-colors">−</button>
                           <span className="font-sans text-sm text-[#5A3A1E] w-5 text-center">{item.quantity}</span>
-                          <button onClick={() => updateQty(item.tempId, 1)} className="print:hidden w-5 h-5 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none">+</button>
+                          <button onClick={() => updateQty(item.tempId, 1)} className="print:hidden w-7 h-7 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] text-xs leading-none transition-colors">+</button>
                         </>
                       ) : (
                         <span className="font-sans text-sm text-[#5A3A1E]">{item.quantity}</span>

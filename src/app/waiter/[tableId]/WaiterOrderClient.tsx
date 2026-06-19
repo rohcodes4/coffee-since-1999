@@ -380,18 +380,18 @@ export function WaiterOrderClient({
                           {qty === 0 ? (
                             <button
                               onClick={() => addToCart(product)}
-                              className="flex items-center gap-1 px-3 py-1.5 bg-[#1A0B04] text-white rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors"
+                              className="flex items-center gap-1.5 px-4 py-2.5 bg-[#1A0B04] text-white rounded-xl font-sans text-sm font-semibold hover:bg-[#B86B1A] transition-colors active:scale-95"
                             >
-                              <Plus size={12} /> Add
+                              <Plus size={13} /> Add
                             </button>
                           ) : (
                             <div className="flex items-center gap-2">
-                              <button onClick={() => removeFromCart(product.id)} className="w-7 h-7 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8]">
-                                <Minus size={11} />
+                              <button onClick={() => removeFromCart(product.id)} className="w-10 h-10 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] active:scale-95 transition-all">
+                                <Minus size={13} />
                               </button>
-                              <span className="font-sans font-semibold text-sm text-[#1A0B04] w-4 text-center">{qty}</span>
-                              <button onClick={() => addToCart(product)} className="w-7 h-7 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A]">
-                                <Plus size={11} />
+                              <span className="font-sans font-semibold text-sm text-[#1A0B04] w-5 text-center">{qty}</span>
+                              <button onClick={() => addToCart(product)} className="w-10 h-10 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A] active:scale-95 transition-all">
+                                <Plus size={13} />
                               </button>
                             </div>
                           )}
@@ -433,14 +433,14 @@ export function WaiterOrderClient({
             <div className="px-6 py-4 space-y-3">
               {cart.map((item) => (
                 <div key={item.product.id} className="flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="font-sans text-sm font-medium text-[#1A0B04]">{item.product.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-sans text-sm font-medium text-[#1A0B04] truncate">{item.product.name}</p>
                     <p className="font-sans text-xs text-[#9A7A56]">{formatPrice(item.product.price)} each</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => removeFromCart(item.product.id)} className="w-7 h-7 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E]"><Minus size={11} /></button>
+                    <button onClick={() => removeFromCart(item.product.id)} className="w-10 h-10 rounded-full border border-[#CFC0A0] flex items-center justify-center text-[#5A3A1E] hover:bg-[#EDE1C8] active:scale-95 transition-all"><Minus size={13} /></button>
                     <span className="font-sans font-semibold text-sm text-[#1A0B04] w-5 text-center">{item.qty}</span>
-                    <button onClick={() => addToCart(item.product)} className="w-7 h-7 rounded-full bg-[#1A0B04] flex items-center justify-center text-white"><Plus size={11} /></button>
+                    <button onClick={() => addToCart(item.product)} className="w-10 h-10 rounded-full bg-[#1A0B04] flex items-center justify-center text-white hover:bg-[#B86B1A] active:scale-95 transition-all"><Plus size={13} /></button>
                   </div>
                   <span className="font-display italic text-[#B86B1A] shrink-0" style={{ fontSize: "0.95rem" }}>
                     {formatPrice(item.product.price * item.qty)}
